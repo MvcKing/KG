@@ -1,43 +1,54 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
+/* 全局鎖定，防止手機版橡皮筋回彈與橫向溢出 */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* 徹底禁止全頁面捲動 */
     background: #0f0f0f;
     color: white;
     font-family: "Microsoft JhengHei", sans-serif;
-    padding-top: 80px;
+    /* 防止手機長按彈出選單 */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
-/* 搜尋列 */
+/* 頂部搜尋列 */
 .search-bar {
     position: fixed;
     top: 0;
     width: 100%;
-    background: rgba(30, 30, 30, 0.9);
+    background: rgba(30, 30, 30, 0.95);
     padding: 15px;
     display: flex;
     justify-content: center;
     gap: 10px;
     z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
 .search-bar input {
-    padding: 8px 15px;
+    padding: 10px 15px;
     border-radius: 20px;
-    border: none;
-    width: 300px;
+    border: 1px solid #444;
+    background: #222;
+    color: white;
+    width: 60%;
+    max-width: 300px;
 }
 
-/* 3D 容器 */
+/* 3D 核心容器 */
 .container {
-    position: relative;
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 200px;
     height: 280px;
     perspective: 1500px;
-    margin: 100px 0;
+    /* 關鍵：攔截所有瀏覽器預設手勢，交由 JS 處理 */
+    touch-action: none; 
 }
 
 .carousel {
@@ -53,13 +64,13 @@ body {
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
-    transition: all 0.5s;
 }
 
-/* 被搜尋選中時的發光效果 */
+/* 搜尋命中特效 */
 .card.highlight .card-inner {
-    box-shadow: 0 0 30px #ff00ff;
-    border: 2px solid #ff00ff;
+    box-shadow: 0 0 30px #00d4ff;
+    border: 2px solid #00d4ff;
+    transform: scale(1.05);
 }
 
 .card-inner {
@@ -67,23 +78,30 @@ body {
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
-    transition: transform 0.6s ease;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
 }
 
-.card-inner.is-flipped { transform: rotateY(180deg); }
+.card-inner.is-flipped {
+    transform: rotateY(180deg);
+}
 
 .front, .back {
     position: absolute;
     width: 100%;
     height: 100%;
     backface-visibility: hidden;
-    border-radius: 12px;
+    border-radius: 15px;
+    background: #1a1a1a;
+    border: 1px solid rgba(255,255,255,0.1);
     overflow: hidden;
-    background: #222;
 }
 
-.front img { width: 100%; height: 100%; object-fit: cover; }
+.front img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
 .front .title-tag {
     position: absolute;
@@ -91,58 +109,57 @@ body {
     background: rgba(0,0,0,0.7);
     width: 100%;
     padding: 8px;
-    font-size: 14px;
     text-align: center;
+    font-size: 14px;
 }
 
 .back {
     transform: rotateY(180deg);
-    background: #1a1a1a;
     padding: 15px;
-    /* 文字換行處理 */
-    display: block;
+    background: linear-gradient(135deg, #222, #000);
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
-    white-space: pre-wrap; /* 保留換行 */
+    white-space: pre-wrap; /* 支援換行 */
     word-break: break-all;
-    line-height: 1.6;
-    font-size: 14px;
-    border: 1px solid #444;
+    line-height: 1.5;
 }
 
-/* 管理面板 */
+/* 管理面板 - 放在最下方 */
 .admin-panel {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
     background: #1e1e1e;
-    padding: 20px;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 500px;
-    margin-bottom: 50px;
+    padding: 15px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    max-height: 35vh;
+    overflow-y: auto;
+    z-index: 90;
 }
 
-.form-group { display: flex; flex-direction: column; gap: 10px; }
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
 .form-group input, .form-group textarea {
-    padding: 10px;
+    padding: 8px;
     background: #333;
     border: 1px solid #444;
     color: white;
     border-radius: 5px;
 }
-.form-group textarea { height: 80px; }
+
 #addBtn {
-    padding: 10px;
     background: #007bff;
     color: white;
     border: none;
-    cursor: pointer;
+    padding: 10px;
     border-radius: 5px;
-}
-
-.container {
-    position: relative;
-    width: 200px;
-    height: 280px;
-    perspective: 1500px;
-    margin: 100px 0;
-    /* 防止手機瀏覽器預設手勢干擾旋轉操作 */
-    touch-action: none; 
+    font-weight: bold;
 }
