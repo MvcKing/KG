@@ -4,32 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kyogoku 產品資訊網</title>
-    <meta property="og:title" content="Kyogoku 產品資訊網">
-    <meta property="og:description" content="探索 Kyogoku 精選產品，提供 3D 互動旋轉展示">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- LINE 專用導引遮罩 -->
-    <div id="line-guide">
-        <div class="guide-arrow top">▼</div>
-        <div class="guide-content">
-            <h2 style="color: #ff2d55; margin-bottom: 10px;">偵測到 LINE 瀏覽器</h2>
-            <p style="margin-bottom: 20px;">語音搜尋功能受限</p>
-            <div class="guide-step"><span>1</span> 點擊功能選單圖示</div>
-            <div class="guide-step"><span>2</span> 選擇 <strong>「在瀏覽器中開啟」</strong></div>
-        </div>
-        <div class="guide-arrow bottom">▼</div>
-    </div>
-
     <!-- 全域遮罩 -->
-    <div class="admin-overlay" id="overlay" onclick="closeAllPanels()"></div>
+    <div class="global-overlay" id="overlay" onclick="closeAllPanels()"></div>
 
-    <!-- 側邊選單 -->
+    <!-- 側邊選單：修正預設隱藏與層級 -->
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-header"><h3 class="sidebar-title">快速連結</h3></div>
+        <div class="sidebar-header"><h3>系統導航</h3></div>
         <div class="sidebar-content">
-            <a href="https://mvcking.github.io/Live-Streaming-Schedule/LiveStreamingSchedule.html" class="nav-item">
+            <a href="https://mvcking.github.io/Live-Streaming-Schedule/LiveStreamingSchedule.html" class="nav-item" target="_blank">
                 <img src="https://www.google.com/s2/favicons?sz=64&domain=mvcking.github.io" class="nav-icon">
                 <span>直播排班系統</span>
             </a>
@@ -40,11 +26,7 @@
     <div class="search-bar">
         <button class="menu-btn neon-btn" onclick="toggleSidebar(true)">&#9776;</button>
         <div class="search-input-group">
-            <input type="text" id="searchInput" placeholder="搜尋產品...">
-            <button id="voiceBtn" class="voice-btn neon-btn" onclick="startVoiceSearch()">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
-            </button>
+            <input type="text" id="searchInput" placeholder="搜尋產品名稱...">
             <button class="search-submit neon-btn" onclick="searchCard()">GO</button>
         </div>
     </div>
@@ -60,35 +42,36 @@
     <!-- 編輯與新增面板 -->
     <div class="admin-panel" id="adminPanel">
         <div class="close-handle" onclick="toggleAdmin(false)"></div>
-        <h3 id="panelTitle" class="panel-title">產品資訊</h3>
+        <h3 id="panelTitle" class="panel-title">產品資訊編輯</h3>
         <input type="hidden" id="editIndex" value="-1">
         
-        <div class="form-group">
-            <label class="input-label">基本資訊</label>
-            <input type="text" id="cardName" class="neon-input" placeholder="產品名稱">
-            <input type="number" id="cardPrice" class="neon-input" placeholder="銷售價格">
+        <div class="form-box">
+            <label class="field-label">產品基本資訊</label>
+            <div class="input-row">
+                <input type="text" id="cardName" class="neon-input" placeholder="產品名稱">
+                <input type="number" id="cardPrice" class="neon-input" placeholder="價格" style="width: 100px;">
+            </div>
             
-            <label class="input-label">圖片上傳 (支援行動裝置相機)</label>
-            <div class="upload-area" onclick="document.getElementById('cardImgFile').click()">
+            <label class="field-label">產品圖片 (支援相機拍照)</label>
+            <div class="upload-zone" onclick="document.getElementById('cardImgFile').click()">
                 <div id="uploadPlaceholder">
-                    <span class="upload-icon">📸</span>
-                    <p id="uploadStatus">點擊開啟檔案或相機</p>
-                    <p style="font-size: 11px; color: #666; margin-top: 4px;">(手機裝置可直接拍照使用功能)</p>
+                    <span class="cam-icon">📸</span>
+                    <p id="uploadStatus">點擊開啟相機或相簿</p>
                 </div>
                 <input type="file" id="cardImgFile" accept="image/*" capture="environment" style="display:none" onchange="previewImage(this)">
-                <div id="previewWrapper" class="preview-wrapper" style="display:none;">
-                    <img id="imgPreview" class="img-preview">
+                <div id="previewWrapper" style="display:none; width:100%;">
+                    <img id="imgPreview" class="preview-img">
                 </div>
             </div>
             <input type="hidden" id="cardImgBase64"> 
 
-            <label class="input-label">詳細說明</label>
-            <textarea id="cardBack" class="neon-input neon-textarea" placeholder="產品介紹、規格或備註..." rows="3"></textarea>
+            <label class="field-label">詳細介紹</label>
+            <textarea id="cardBack" class="neon-input" placeholder="請輸入產品規格或介紹..." rows="3"></textarea>
             
-            <div class="button-group">
-                <button id="saveBtn" class="save-action-btn" onclick="saveCard()">確認儲存</button>
-                <button id="deleteBtn" class="delete-action-btn" style="display:none;" onclick="deleteCard()">刪除此產品</button>
-                <button class="cancel-action-btn" onclick="toggleAdmin(false)">取消返回</button>
+            <div class="action-group">
+                <button id="saveBtn" class="btn-confirm" onclick="saveCard()">確認儲存</button>
+                <button id="deleteBtn" class="btn-delete" style="display:none;" onclick="deleteCard()">刪除此產品</button>
+                <button class="btn-cancel" onclick="toggleAdmin(false)">取消</button>
             </div>
         </div>
     </div>
