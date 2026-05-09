@@ -1,97 +1,81 @@
-/* --- LINE 引導遮罩樣式 --- */
+/* --- 基礎設定 --- */
+html, body {
+    margin: 0; padding: 0; width: 100vw; height: 100vh;
+    overflow: hidden; position: fixed;
+    background: radial-gradient(circle at center, #151515 0%, #000 100%);
+    color: white; font-family: "Microsoft JhengHei", sans-serif;
+}
+
+/* --- LINE 引導遮罩 --- */
 #line-guide {
-    display: none; /* 預設隱藏，由 JS 控制顯示 */
-    position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0, 0, 0, 0.95);
-    z-index: 9999;
-    backdrop-filter: blur(10px);
-    font-family: "Microsoft JhengHei", sans-serif;
+    display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.96); z-index: 9999; backdrop-filter: blur(10px);
 }
-
 .guide-arrow {
-    position: absolute;
-    top: 10px; right: 20px;
-    font-size: 50px;
-    color: #00f2ff;
-    transform: rotate(180deg);
-    animation: bounce 1s infinite;
-    text-shadow: 0 0 15px #00f2ff;
+    position: absolute; right: 20px; font-size: 50px; color: #00f2ff;
+    text-shadow: 0 0 15px #00f2ff; z-index: 10000;
 }
+.guide-arrow.top { top: 10px; transform: rotate(180deg); animation: bounceTop 1s infinite; }
+.guide-arrow.bottom { bottom: 15px; animation: bounceBottom 1s infinite; }
 
-@keyframes bounce {
-    0%, 100% { transform: rotate(180deg) translateY(0); }
-    50% { transform: rotate(180deg) translateY(15px); }
-}
+@keyframes bounceTop { 0%, 100% { transform: rotate(180deg) translateY(0); } 50% { transform: rotate(180deg) translateY(15px); } }
+@keyframes bounceBottom { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
 .guide-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    text-align: center;
-    padding: 0 40px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; text-align: center; padding: 0 40px;
 }
-
 .guide-step {
-    background: #111;
-    border: 1px solid #333;
-    padding: 15px 25px;
-    margin: 10px 0;
-    border-radius: 50px;
-    width: 100%;
-    max-width: 280px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    font-size: 15px;
-    color: #fff;
+    background: #111; border: 1px solid #333; padding: 15px 20px; margin: 10px 0;
+    border-radius: 15px; width: 100%; max-width: 280px; display: flex;
+    align-items: center; gap: 15px; font-size: 15px; color: #fff; text-align: left;
 }
-
 .guide-step span {
-    background: #00f2ff;
-    color: #000;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    flex-shrink: 0;
+    background: #00f2ff; color: #000; width: 24px; height: 24px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: bold; flex-shrink: 0;
 }
+.neon-line { width: 120px; height: 1px; background: #00f2ff; margin: 25px 0; box-shadow: 0 0 10px #00f2ff; }
 
-.neon-line {
-    width: 150px;
-    height: 1px;
-    background: #00f2ff;
-    margin: 30px 0;
-    box-shadow: 0 0 10px #00f2ff;
+/* --- UI 元件 --- */
+.neon-btn {
+    background: #000; color: #00f2ff; border: 1px solid #00f2ff;
+    border-radius: 20px; font-weight: bold; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.3s; box-shadow: 0 0 5px rgba(0, 242, 255, 0.3); outline: none;
 }
+.voice-btn.recording { color: #ff2d55; border-color: #ff2d55; animation: pulse 1s infinite; }
+@keyframes pulse { 50% { opacity: 0.5; } }
 
-/* --- 原有基礎樣式 (精簡版，請保留之前的) --- */
-html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; position: fixed; background: radial-gradient(circle at center, #151515 0%, #000 100%); color: white; font-family: "Microsoft JhengHei", sans-serif; }
-.neon-btn { background: #000; color: #00f2ff; border: 1px solid #00f2ff; border-radius: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; box-shadow: 0 0 5px rgba(0, 242, 255, 0.3); outline: none; }
-.search-bar { position: fixed; top: 0; left: 0; width: 100vw; background: rgba(0, 0, 0, 0.95); padding: 12px 15px; display: flex; align-items: center; gap: 10px; z-index: 100; border-bottom: 1px solid rgba(0, 242, 255, 0.2); box-sizing: border-box; }
+.search-bar {
+    position: fixed; top: 0; left: 0; width: 100vw; background: rgba(0, 0, 0, 0.95);
+    padding: 12px 15px; display: flex; align-items: center; gap: 10px; z-index: 100;
+    border-bottom: 1px solid rgba(0, 242, 255, 0.2); box-sizing: border-box;
+}
 .search-input-group { display: flex; flex: 1; gap: 8px; }
-.search-bar input { flex: 1; min-width: 0; padding: 8px 15px; border-radius: 20px; border: 1px solid #333; background: #000; color: #00f2ff; outline: none; }
-.menu-btn, .voice-btn { width: 40px; height: 35px; flex-shrink: 0; }
-.voice-btn svg { width: 18px; fill: currentColor; }
+.search-bar input { flex: 1; padding: 8px 15px; border-radius: 20px; border: 1px solid #333; background: #000; color: #00f2ff; outline: none; }
+
 .container { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 320px; perspective: 2000px; }
 .carousel { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .card { position: absolute; width: 100%; height: 100%; transform-style: preserve-3d; }
 .card-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.6s; border-radius: 15px; }
 .card-inner.is-flipped { transform: rotateY(180deg); }
+
 .front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; background: #111; border: 1px solid rgba(0, 242, 255, 0.4); overflow: hidden; }
 .front img { width: 100%; height: 75%; object-fit: cover; }
-.info-tag { display: flex; height: 25%; background: #000; border-top: 1px solid #222; }
-.info-name { flex: 1.5; display: flex; align-items: center; justify-content: center; font-size: 13px; text-align: center; }
+.info-tag { display: flex; height: 25%; background: #000; }
+.info-name { flex: 1.5; display: flex; align-items: center; justify-content: center; font-size: 13px; text-align: center; padding: 2px; }
 .info-price { flex: 1; display: flex; align-items: center; justify-content: center; color: #00f2ff; font-weight: bold; }
-.back { transform: rotateY(180deg); padding: 20px; box-sizing: border-box; background: #0a0a0a; display: flex; flex-direction: column; gap: 5px; }
-.sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100vh; background: rgba(10, 10, 10, 0.98); border-right: 1px solid rgba(0, 242, 255, 0.3); transition: 0.4s; z-index: 300; padding: 20px; box-sizing: border-box; }
+
+.back { transform: rotateY(180deg); padding: 20px; box-sizing: border-box; background: #0a0a0a; display: flex; flex-direction: column; gap: 8px; }
+.btn-edit { position: absolute; top: 10px; right: 10px; background: none; border: 1px solid #333; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; }
+
+.sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100vh; background: #0a0a0a; border-right: 1px solid #00f2ff; transition: 0.4s; z-index: 300; padding: 20px; box-sizing: border-box; }
 .sidebar.open { left: 0; }
-.admin-panel { position: fixed; bottom: -100%; left: 0; width: 100vw; background: #0d0d0d; padding: 30px 25px; border-top: 2px solid #00f2ff; z-index: 400; transition: 0.5s; box-sizing: border-box; border-radius: 25px 25px 0 0; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 15px; color: #fff; text-decoration: none; border-bottom: 1px solid #222; }
+
+.admin-panel { position: fixed; bottom: -100%; left: 0; width: 100vw; background: #0d0d0d; padding: 30px 25px; border-top: 2px solid #00f2ff; z-index: 400; transition: 0.5s; box-sizing: border-box; border-radius: 20px 20px 0 0; }
 .admin-panel.active { bottom: 0; }
+.form-group input, .form-group textarea { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; }
 .fab-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: #000; border-radius: 50%; border: 1px solid #00f2ff; color: #00f2ff; font-size: 30px; z-index: 150; }
 .admin-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 250; display: none; }
