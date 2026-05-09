@@ -136,3 +136,13 @@ body {
     cursor: pointer;
     border-radius: 5px;
 }
+
+.container {
+    position: relative;
+    width: 200px;
+    height: 280px;
+    perspective: 1500px;
+    margin: 100px 0;
+    /* 防止手機瀏覽器預設手勢干擾旋轉操作 */
+    touch-action: none; 
+}
