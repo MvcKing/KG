@@ -1,4 +1,4 @@
-/* 基礎鎖定 */
+/* --- 基礎背景與字體 --- */
 html, body {
     margin: 0;
     padding: 0;
@@ -6,48 +6,73 @@ html, body {
     height: 100vh;
     overflow: hidden;
     position: fixed;
-    background: #050505;
+    background: radial-gradient(circle at center, #111 0%, #000 100%);
     color: white;
     font-family: "Microsoft JhengHei", sans-serif;
 }
 
-/* 搜尋列 */
+/* --- 全域呼吸動畫定義 --- */
+@keyframes glow-pulse {
+    0% { box-shadow: 0 0 5px rgba(0, 242, 255, 0.2); border-color: rgba(0, 242, 255, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(0, 242, 255, 0.6); border-color: rgba(0, 242, 255, 0.8); }
+    100% { box-shadow: 0 0 5px rgba(0, 242, 255, 0.2); border-color: rgba(0, 242, 255, 0.3); }
+}
+
+@keyframes text-glow {
+    0% { text-shadow: 0 0 5px rgba(0, 242, 255, 0.2); }
+    50% { text-shadow: 0 0 15px rgba(0, 242, 255, 0.8); }
+    100% { text-shadow: 0 0 5px rgba(0, 242, 255, 0.2); }
+}
+
+/* --- 1. 搜尋區域 --- */
 .search-bar {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
-    background: rgba(15, 15, 15, 0.95);
+    background: rgba(0, 0, 0, 0.9);
     padding: 15px;
     display: flex;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
     z-index: 100;
-    border-bottom: 1px solid #222;
+    border-bottom: 1px solid rgba(0, 242, 255, 0.3);
+    /* 加入呼吸感 */
+    box-shadow: 0 4px 15px rgba(0, 242, 255, 0.1);
 }
 
 .search-bar input {
     padding: 10px 15px;
     border-radius: 20px;
     border: 1px solid #333;
-    background: #111;
-    color: white;
+    background: #000;
+    color: #00f2ff;
     width: 60%;
+    outline: none;
+    transition: 0.3s;
+}
+
+.search-bar input:focus {
+    border-color: #00f2ff;
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
 }
 
 .search-bar button {
-    background: #444;
-    color: white;
-    border: none;
-    padding: 8px 15px;
+    background: transparent;
+    color: #00f2ff;
+    border: 1px solid #00f2ff;
+    padding: 8px 20px;
     border-radius: 20px;
     cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    animation: glow-pulse 3s infinite;
 }
 
-/* 3D 容器 */
+/* --- 2. 3D 旋轉卡片 --- */
 .container {
     position: absolute;
-    top: 45%;
+    top: 48%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 180px;
@@ -64,25 +89,16 @@ html, body {
     transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.card {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-}
-
-/* 搜尋選中特效 */
-.card.highlight .card-inner {
-    box-shadow: 0 0 30px #00f2ff, inset 0 0 15px #00f2ff;
-    border: 2px solid #00f2ff;
-}
-
 .card-inner {
     position: relative;
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    /* 卡片預設微弱發光 */
+    border-radius: 15px;
+    border: 1px solid rgba(0, 242, 255, 0.3);
+    animation: glow-pulse 4s infinite ease-in-out;
 }
 
 .card-inner.is-flipped { transform: rotateY(180deg); }
@@ -93,69 +109,48 @@ html, body {
     height: 100%;
     backface-visibility: hidden;
     border-radius: 15px;
-    background: #111;
-    border: 1px solid rgba(255,255,255,0.1);
+    background: #000;
+    overflow: hidden;
 }
 
-.front img { width: 100%; height: 100%; object-fit: cover; border-radius: 15px; }
+.front img { width: 100%; height: 100%; object-fit: cover; }
 
 .front .title-tag {
     position: absolute;
     bottom: 0;
-    background: rgba(0,0,0,0.85);
+    background: rgba(0, 0, 0, 0.85);
+    color: #00f2ff;
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     text-align: center;
     font-size: 14px;
+    border-top: 1px solid rgba(0, 242, 255, 0.4);
 }
 
 .back {
     transform: rotateY(180deg);
     padding: 20px;
-    background: linear-gradient(135deg, #111, #000);
-    overflow-y: auto;
+    background: linear-gradient(135deg, #0a0a0a, #000);
+    box-sizing: border-box;
+    text-align: left;
 }
 
-/* --- 黑暗炫光 FAB 按鈕 --- */
-.fab-btn {
-    position: fixed;
-    bottom: 40px;
-    right: 30px;
-    width: 65px;
-    height: 65px;
-    background: #000;
-    border-radius: 50%;
-    border: 1px solid #333;
-    color: #fff;
-    font-size: 32px;
-    z-index: 150;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* 炫光陰影 */
-    box-shadow: 0 0 15px rgba(0, 242, 255, 0.3), 
-                inset 0 0 10px rgba(0, 242, 255, 0.2);
-    transition: all 0.3s ease;
-}
-
-.fab-btn:hover, .fab-btn:active {
-    box-shadow: 0 0 25px rgba(0, 242, 255, 0.6), 
-                inset 0 0 15px rgba(0, 242, 255, 0.4);
+.back strong {
     color: #00f2ff;
-    transform: scale(1.1);
+    animation: text-glow 3s infinite;
 }
 
-/* --- 抽屜式管理面板 --- */
+/* --- 3. 編輯區域 (抽屜面板) --- */
 .admin-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.8);
     z-index: 190;
-    display: none; /* 預設隱藏遮罩 */
+    display: none;
+    backdrop-filter: blur(3px);
 }
 
 .admin-panel {
@@ -163,59 +158,70 @@ html, body {
     bottom: -100%;
     left: 0;
     width: 100vw;
-    background: #151515;
-    padding: 25px;
+    background: #0a0a0a;
+    padding: 30px 20px;
     border-top: 2px solid #00f2ff;
-    border-top-left-radius: 25px;
-    border-top-right-radius: 25px;
-    transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.1);
     z-index: 200;
-    box-sizing: border-box;
+    box-shadow: 0 -10px 30px rgba(0, 242, 255, 0.2);
 }
 
-.admin-panel.active {
-    bottom: 0;
-}
-
-.admin-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
+.admin-panel.active { bottom: 0; }
 
 .close-handle {
-    width: 50px;
-    height: 5px;
-    background: #333;
-    border-radius: 5px;
-    margin: -10px auto 15px auto;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    width: 40px;
+    height: 4px;
+    background: #00f2ff;
+    border-radius: 10px;
+    margin: -15px auto 20px auto;
+    opacity: 0.5;
 }
 
 .form-group input, .form-group textarea {
     padding: 12px;
-    background: #111;
+    background: #000;
     border: 1px solid #333;
-    color: white;
+    color: #fff;
     border-radius: 10px;
+    margin-bottom: 15px;
+    width: 100%;
+    box-sizing: border-box;
     outline: none;
+    transition: 0.3s;
 }
 
-.form-group input:focus { border-color: #00f2ff; }
+.form-group input:focus { border-color: #00f2ff; box-shadow: 0 0 10px rgba(0, 242, 255, 0.3); }
 
 #addBtn {
-    background: #00f2ff;
-    color: #000;
-    border: none;
+    width: 100%;
+    background: #000;
+    color: #00f2ff;
+    border: 1px solid #00f2ff;
     padding: 15px;
     border-radius: 10px;
     font-weight: bold;
     cursor: pointer;
-    margin-top: 10px;
+    animation: glow-pulse 2s infinite; /* 讓確認按鈕呼吸感最快 */
+}
+
+/* --- 4. 黑暗炫光 FAB --- */
+.fab-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 65px;
+    height: 65px;
+    background: #000;
+    border-radius: 50%;
+    border: 1px solid #00f2ff;
+    color: #00f2ff;
+    font-size: 35px;
+    z-index: 150;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: glow-pulse 3s infinite;
 }

@@ -3,38 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>3D 黑暗炫光展示</title>
+    <title>3D Neon Showcase</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- 遮罩層：點擊可直接關閉面板 -->
     <div class="admin-overlay" id="overlay"></div>
 
     <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="搜尋髮妝品...">
-        <button onclick="searchCard()">搜尋</button>
+        <input type="text" id="searchInput" placeholder="搜尋髮妝產品...">
+        <button onclick="searchCard()">SEARCH</button>
     </div>
 
     <div class="container">
         <div class="carousel" id="carousel"></div>
     </div>
 
-    <!-- 炫光 FAB 按鈕 -->
     <button class="fab-btn" id="openDrawer">+</button>
 
-    <!-- 抽屜面板 -->
     <div class="admin-panel" id="adminPanel">
-        <div class="close-handle"></div> <!-- 裝飾用拉桿 -->
-        <div class="admin-header">
-            <h3 style="color:#00f2ff;">新增髮妝產品</h3>
-            <button id="closeDrawer" style="background:none; border:none; color:#888; font-size:24px;">&times;</button>
+        <div class="close-handle"></div>
+        <div class="admin-header" style="display:flex; justify-content:space-between; margin-bottom:20px;">
+            <h3 style="color:#00f2ff; margin:0; letter-spacing:2px;">NEW PRODUCT</h3>
+            <button id="closeDrawer" style="background:none; border:none; color:#00f2ff; font-size:24px; cursor:pointer;">&times;</button>
         </div>
         <div class="form-group">
-            <input type="text" id="cardName" placeholder="產品名稱 (如：洗髮精)">
-            <input type="text" id="cardImg" placeholder="圖片連結 (URL)">
-            <textarea id="cardBack" placeholder="背面介紹內容..."></textarea>
-            <button id="addBtn">確認新增至輪播</button>
+            <input type="text" id="cardName" placeholder="產品名稱">
+            <input type="text" id="cardImg" placeholder="圖片 URL">
+            <textarea id="cardBack" rows="4" placeholder="詳細描述..."></textarea>
+            <button id="addBtn">CONFIRM & ADD</button>
         </div>
     </div>
 

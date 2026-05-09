@@ -10,7 +10,6 @@ const openDrawer = document.getElementById('openDrawer');
 const closeDrawer = document.getElementById('closeDrawer');
 const addBtn = document.getElementById('addBtn');
 
-// 面板控制功能 (開/關)
 function togglePanel(isOpen) {
     if (isOpen) {
         adminPanel.classList.add('active');
@@ -23,9 +22,8 @@ function togglePanel(isOpen) {
 
 openDrawer.onclick = () => togglePanel(true);
 closeDrawer.onclick = () => togglePanel(false);
-overlay.onclick = () => togglePanel(false); // 點擊背景遮罩即可收納
+overlay.onclick = () => togglePanel(false);
 
-// 旋轉變數
 let isDragging = false;
 let startX = 0;
 let currentRotation = 0;
@@ -36,7 +34,7 @@ function renderCards() {
     carousel.innerHTML = "";
     const total = cardData.length;
     const angleStep = 360 / total;
-    const radius = Math.max(300, total * 60);
+    const radius = Math.max(280, total * 60);
 
     cardData.forEach((item, i) => {
         const cardHtml = `
@@ -47,8 +45,9 @@ function renderCards() {
                         <div class="title-tag">${item.name}</div>
                     </div>
                     <div class="back">
-                        <strong style="color:#00f2ff">${item.name}</strong><hr style="margin:8px 0; border:0; border-top:1px solid #333;">
-                        <p style="font-size:13px; line-height:1.6;">${item.desc}</p>
+                        <strong style="font-size:1.2em;">${item.name}</strong>
+                        <hr style="border:0; border-top:1px solid #333; margin:10px 0;">
+                        <p style="font-size:13px; line-height:1.6; color:#ccc;">${item.desc}</p>
                     </div>
                 </div>
             </div>`;
@@ -91,8 +90,14 @@ function searchCard() {
     if (index !== -1) {
         currentRotation = -(index * (360 / cardData.length));
         carousel.style.transform = `rotateY(${currentRotation}deg)`;
-        document.querySelectorAll('.card').forEach(c => c.classList.remove('highlight'));
-        setTimeout(() => document.getElementById(`card-${index}`).classList.add('highlight'), 800);
+        document.querySelectorAll('.card-inner').forEach(c => {
+            c.style.animation = "none";
+            c.parentElement.classList.remove('highlight');
+        });
+        setTimeout(() => {
+            const hit = document.getElementById(`card-${index}`);
+            hit.classList.add('highlight');
+        }, 800);
     }
 }
 
@@ -100,30 +105,23 @@ addBtn.onclick = () => {
     const name = document.getElementById('cardName').value;
     const img = document.getElementById('cardImg').value || `https://picsum.photos/300/400?random=${Math.random()}`;
     const desc = document.getElementById('cardBack').value;
-
-    if (!name || !desc) return alert("請填寫產品完整資訊");
-
+    if (!name || !desc) return alert("請輸入完整產品資訊");
     cardData.push({ name, img, desc });
     renderCards();
-    togglePanel(false); // 新增完自動收起
-    
-    // 清空輸入
+    togglePanel(false);
     document.getElementById('cardName').value = "";
     document.getElementById('cardBack').value = "";
-    
-    // 定位到最新卡片
     setTimeout(() => {
         currentRotation = -((cardData.length - 1) * (360 / cardData.length));
         carousel.style.transform = `rotateY(${currentRotation}deg)`;
     }, 400);
 };
 
-// 事件監聽 (相容手機與電腦)
-window.addEventListener('mousedown', handleStart);
-window.addEventListener('mousemove', handleMove);
-window.addEventListener('mouseup', handleEnd);
 window.addEventListener('touchstart', handleStart, { passive: false });
 window.addEventListener('touchmove', handleMove, { passive: false });
 window.addEventListener('touchend', handleEnd, { passive: false });
+window.addEventListener('mousedown', handleStart);
+window.addEventListener('mousemove', handleMove);
+window.addEventListener('mouseup', handleEnd);
 
 renderCards();
