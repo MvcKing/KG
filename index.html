@@ -3,35 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>3D Neon Showcase</title>
+    <title>3D Neon Mall - Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <!-- 全域背景遮罩 -->
     <div class="admin-overlay" id="overlay"></div>
 
-    <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="搜尋髮妝產品...">
-        <button onclick="searchCard()">SEARCH</button>
+    <!-- 側邊導航欄 (Sidebar) -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 class="sidebar-title">快速連結</h3>
+            <button class="close-sidebar" onclick="toggleSidebar(false)">&times;</button>
+        </div>
+        <div class="sidebar-content">
+            <!-- 您可以修改 src 換成您想要的圖示圖片 -->
+            <a href="https://mvcking.github.io/Live-Streaming-Schedule/LiveStreamingSchedule.html" class="nav-item">
+                <img src="https://cdn-icons-png.flaticon.com/512/3048/3048371.png" class="nav-icon" alt="icon">
+                <span>直播排班系統</span>
+            </a>
+            <!-- 未來若有新連結，直接複製上面的 <a> 標籤即可 -->
+        </div>
     </div>
 
+    <!-- 頂部搜尋列：新增左側選單按鈕 -->
+    <div class="search-bar">
+        <button class="menu-btn" onclick="toggleSidebar(true)">&#9776;</button>
+        <div class="search-input-group">
+            <input type="text" id="searchInput" placeholder="搜尋名稱...">
+            <button class="search-submit" onclick="searchCard()">GO</button>
+        </div>
+    </div>
+
+    <!-- 3D 核心展示區 -->
     <div class="container">
         <div class="carousel" id="carousel"></div>
     </div>
 
-    <button class="fab-btn" id="openDrawer">+</button>
+    <!-- 浮動新增按鈕 -->
+    <button class="fab-btn" onclick="toggleAdmin(true)">+</button>
 
+    <!-- 抽屜式編輯面板 -->
     <div class="admin-panel" id="adminPanel">
         <div class="close-handle"></div>
-        <div class="admin-header" style="display:flex; justify-content:space-between; margin-bottom:20px;">
-            <h3 style="color:#00f2ff; margin:0; letter-spacing:2px;">NEW PRODUCT</h3>
-            <button id="closeDrawer" style="background:none; border:none; color:#00f2ff; font-size:24px; cursor:pointer;">&times;</button>
-        </div>
+        <h3 style="color:#00f2ff; margin-bottom:15px; text-align: center;">新增產品資訊</h3>
         <div class="form-group">
             <input type="text" id="cardName" placeholder="產品名稱">
-            <input type="text" id="cardImg" placeholder="圖片 URL">
-            <textarea id="cardBack" rows="4" placeholder="詳細描述..."></textarea>
-            <button id="addBtn">CONFIRM & ADD</button>
+            <input type="number" id="cardPrice" placeholder="銷售價格 (例如: 880)">
+            <input type="text" id="cardImg" placeholder="圖片 URL (可留空使用隨機圖)">
+            <textarea id="cardBack" placeholder="產品詳細介紹 (支援換行)..." rows="3"></textarea>
+            <button id="addBtn">確認新增產品</button>
+            <button onclick="toggleAdmin(false)" style="width:100%; margin-top:10px; background:none; border:none; color:#666;">取消返回</button>
         </div>
     </div>
 

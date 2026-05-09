@@ -1,57 +1,54 @@
-// 初始資料
+// 1. 初始資料 (預設兩筆產品)
 let cardData = [
-    { name: "極致洗髮精", img: "https://picsum.photos/300/400?random=11", desc: "【深層淨化】\n適合各種髮質使用，\n洗後清爽無負擔。" },
-    { name: "炫光護髮膜", img: "https://picsum.photos/300/400?random=22", desc: "【瞬間光澤】\n鎖住水分與色澤，\n打造絲緞般觸感。" },
-    { name: "頭皮精華液", img: "https://picsum.photos/300/400?random=33", desc: "【舒緩活化】\n活絡頭皮環境，\n深層強健髮根。" }
+    { name: "極致洗髮精", price: "880", img: "https://picsum.photos/300/400?random=11", desc: "【深層淨化】\n適合各種髮質使用。" },
+    { name: "炫光護髮膜", price: "1280", img: "https://picsum.photos/300/400?random=22", desc: "【瞬間光澤】\n鎖住水分與色澤。" }
 ];
 
 const carousel = document.getElementById('carousel');
+const sidebar = document.getElementById('sidebar');
 const adminPanel = document.getElementById('adminPanel');
 const overlay = document.getElementById('overlay');
-const openDrawer = document.getElementById('openDrawer');
-const closeDrawer = document.getElementById('closeDrawer');
-const addBtn = document.getElementById('addBtn');
 
-// 面板開關邏輯 (不論有沒有新增都可以自由收合)
-function togglePanel(isOpen) {
-    if (isOpen) {
-        adminPanel.classList.add('active');
-        overlay.style.display = 'block';
-    } else {
-        adminPanel.classList.remove('active');
-        overlay.style.display = 'none';
-    }
+// 2. UI 開關邏輯
+function toggleSidebar(isOpen) {
+    sidebar.classList.toggle('open', isOpen);
+    overlay.style.display = isOpen ? 'block' : 'none';
 }
 
-openDrawer.onclick = () => togglePanel(true);
-closeDrawer.onclick = () => togglePanel(false);
-overlay.onclick = () => togglePanel(false); // 點擊背景遮罩即可收納
+function toggleAdmin(isOpen) {
+    adminPanel.classList.toggle('active', isOpen);
+    overlay.style.display = isOpen ? 'block' : 'none';
+}
 
-// 旋轉變數
-let isDragging = false;
-let startX = 0;
-let currentRotation = 0;
-let tempRotation = 0;
-let lastMoveDistance = 0;
+// 點擊背景遮罩關閉所有開啟的面板
+overlay.onclick = () => {
+    toggleSidebar(false);
+    toggleAdmin(false);
+};
 
+// 3. 渲染卡片核心
 function renderCards() {
     carousel.innerHTML = "";
     const total = cardData.length;
     const angleStep = 360 / total;
-    const radius = Math.max(280, total * 50);
+    const radius = Math.max(300, total * 50); // 根據卡片數量動態調整旋轉半徑
 
     cardData.forEach((item, i) => {
         const cardHtml = `
             <div class="card" id="card-${i}" style="transform: rotateY(${i * angleStep}deg) translateZ(${radius}px)">
                 <div class="card-inner" onclick="handleCardClick(event, this)">
                     <div class="front">
-                        <img src="${item.img}" alt="${item.name}">
-                        <div class="title-tag">${item.name}</div>
+                        <img src="${item.img}" alt="product">
+                        <div class="info-tag">
+                            <div class="info-name">${item.name}</div>
+                            <div class="info-price">$${item.price}</div>
+                        </div>
                     </div>
                     <div class="back">
-                        <strong>${item.name}</strong>
+                        <strong style="color:#00f2ff; font-size:18px;">${item.name}</strong>
+                        <div style="font-size:18px; color:#00f2ff; margin-bottom:10px;">$${item.price}</div>
                         <hr style="border:0; border-top:1px solid #333; margin:10px 0;">
-                        <p>${item.desc}</p>
+                        <p style="font-size:14px; color:#ccc; line-height:1.6; white-space:pre-wrap;">${item.desc}</p>
                     </div>
                 </div>
             </div>`;
@@ -59,7 +56,11 @@ function renderCards() {
     });
 }
 
+// 4. 旋轉互動處理
+let isDragging = false, startX = 0, currentRotation = 0, tempRotation = 0, lastMoveDistance = 0;
+
 function handleStart(e) {
+    if (sidebar.classList.contains('open') || adminPanel.classList.contains('active')) return;
     isDragging = true;
     lastMoveDistance = 0;
     startX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
@@ -84,54 +85,41 @@ function handleEnd() {
 }
 
 function handleCardClick(e, element) {
-    // 若移動距離過大視為旋轉，不觸發翻面
-    if (lastMoveDistance > 10) return;
+    if (lastMoveDistance > 10) return; // 滑動超過 10 像素視為旋轉，不翻面
     element.classList.toggle('is-flipped');
 }
 
-// 搜尋功能
+// 5. 功能按鈕：搜尋與新增
 window.searchCard = function() {
     const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
     const index = cardData.findIndex(item => item.name.toLowerCase().includes(keyword));
-    
     if (index !== -1) {
         currentRotation = -(index * (360 / cardData.length));
         carousel.style.transform = `rotateY(${currentRotation}deg)`;
-        
-        // 移除其他高亮
-        document.querySelectorAll('.card').forEach(c => c.classList.remove('highlight'));
-        // 延遲加入選中特效
-        setTimeout(() => {
-            document.getElementById(`card-${index}`).classList.add('highlight');
-        }, 800);
     }
 };
 
-// 新增卡片功能
-addBtn.onclick = () => {
+document.getElementById('addBtn').onclick = () => {
     const name = document.getElementById('cardName').value.trim();
+    const price = document.getElementById('cardPrice').value.trim();
     const desc = document.getElementById('cardBack').value.trim();
-    const img = document.getElementById('cardImg').value.trim() || `https://picsum.photos/300/400?random=${Math.random()}`;
+    const imgInput = document.getElementById('cardImg').value.trim();
+    const img = imgInput || `https://picsum.photos/300/400?random=${Math.random()}`;
 
-    if (!name || !desc) return alert("請輸入完整產品名稱與描述");
+    if (!name || !price || !desc) return alert("請完整輸入產品名稱、價格與描述");
 
-    cardData.push({ name, img, desc });
+    cardData.push({ name, price, img, desc });
     renderCards();
-    togglePanel(false); // 新增完畢自動關閉
+    toggleAdmin(false);
     
-    // 清空輸入欄
+    // 清空輸入欄位
     document.getElementById('cardName').value = "";
-    document.getElementById('cardImg').value = "";
+    document.getElementById('cardPrice').value = "";
     document.getElementById('cardBack').value = "";
-    
-    // 自動轉向新卡片
-    setTimeout(() => {
-        currentRotation = -((cardData.length - 1) * (360 / cardData.length));
-        carousel.style.transform = `rotateY(${currentRotation}deg)`;
-    }, 400);
+    document.getElementById('cardImg').value = "";
 };
 
-// 全域監聽事件 (相容手機與電腦)
+// 6. 全域事件掛載
 window.addEventListener('touchstart', handleStart, { passive: false });
 window.addEventListener('touchmove', handleMove, { passive: false });
 window.addEventListener('touchend', handleEnd, { passive: false });
