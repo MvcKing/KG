@@ -8,9 +8,9 @@
 </head>
 <body>
 
-    <!-- LINE 專用雙向引導遮罩 -->
+    <!-- LINE 專用雙向引導遮罩 (修正 iPhone 11 箭頭) -->
     <div id="line-guide">
-        <div class="guide-arrow top">▼</div>
+        <div class="guide-arrow top">▼</div> <!-- 右上角向下 -->
         <div class="guide-content">
             <h2 style="color: #ff2d55; margin-bottom: 10px;">偵測到 LINE 瀏覽器</h2>
             <p style="margin-bottom: 20px;">語音搜尋功能受限</p>
@@ -23,16 +23,14 @@
             <div class="neon-line"></div>
             <p style="font-size: 14px; color: #888;">切換後即可使用麥克風搜尋</p>
         </div>
-        <div class="guide-arrow bottom">▲</div>
+        <div class="guide-arrow bottom">▼</div> <!-- 右下角向上 (CSS旋轉) -->
     </div>
 
     <div class="admin-overlay" id="overlay"></div>
 
-    <!-- 側邊導航欄 -->
+    <!-- 側邊導航 -->
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h3 class="sidebar-title">快速連結</h3>
-        </div>
+        <div class="sidebar-header"><h3 class="sidebar-title">快速連結</h3></div>
         <div class="sidebar-content">
             <a href="https://mvcking.github.io/Live-Streaming-Schedule/LiveStreamingSchedule.html" class="nav-item">
                 <img src="https://www.google.com/s2/favicons?sz=64&domain=mvcking.github.io" class="nav-icon" alt="icon">
@@ -53,12 +51,10 @@
         </div>
     </div>
 
-    <!-- 3D 展示區 -->
     <div class="container">
         <div class="carousel" id="carousel"></div>
     </div>
 
-    <!-- 浮動按鈕 -->
     <button class="fab-btn" onclick="openAddMode()">+</button>
 
     <!-- 編輯面板 -->
@@ -69,7 +65,17 @@
         <div class="form-group">
             <input type="text" id="cardName" placeholder="產品名稱">
             <input type="number" id="cardPrice" placeholder="銷售價格">
-            <input type="text" id="cardImg" placeholder="圖片 URL">
+            
+            <!-- 圖片上傳區 (支援相簿、相機) -->
+            <div class="upload-container" onclick="document.getElementById('cardImgFile').click()">
+                <span id="uploadStatus">📷 點擊上傳圖片</span>
+                <input type="file" id="cardImgFile" accept="image/*" style="display:none" onchange="previewImage(this)">
+                <div id="previewWrapper" style="display:none; margin-top:10px;">
+                    <img id="imgPreview" style="width:100%; height:120px; object-fit:contain; border-radius:10px; border: 1px solid #00f2ff;">
+                </div>
+            </div>
+            <input type="hidden" id="cardImgBase64"> 
+
             <textarea id="cardBack" placeholder="產品資訊..." rows="3"></textarea>
             <button id="saveBtn" class="neon-btn" style="width: 100%; height: 45px; border-radius: 10px;" onclick="saveCard()">儲存資訊</button>
             <button onclick="toggleAdmin(false)" style="width:100%; margin-top:10px; background:none; border:none; color:#666;">取消</button>

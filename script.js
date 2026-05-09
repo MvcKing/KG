@@ -1,4 +1,4 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxwrP_8z_NfbhTSvcAZThMjoZYGLYxSOFVUikDYWxLo9l0y9DnmNk_J48YOydSIkNIW/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxGWU6PQskSbaPTj0jNbmCwlmRlUYbzOwtO7eqVfsXKJrWlGkG-fA_Tqz6TRlBDmkUI/exec";
 
 let cardData = [];
 const carousel = document.getElementById('carousel');
@@ -6,30 +6,42 @@ const adminPanel = document.getElementById('adminPanel');
 const overlay = document.getElementById('overlay');
 const searchInput = document.getElementById('searchInput');
 
-// --- 偵測 LINE 環境 ---
+// --- 圖片上傳、預覽與 Base64 轉檔 ---
+function previewImage(input) {
+    const file = input.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64String = e.target.result;
+            document.getElementById('imgPreview').src = base64String;
+            document.getElementById('previewWrapper').style.display = 'block';
+            document.getElementById('uploadStatus').innerText = "已載入圖片檔案";
+            document.getElementById('cardImgBase64').value = base64String;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// --- LINE 偵測與引導 ---
 function handleLineInApp() {
     const ua = navigator.userAgent || navigator.vendor || window.opera;
-    const isLine = ua.indexOf("Line") > -1;
-
-    if (isLine) {
+    if (ua.indexOf("Line") > -1) {
         if (ua.indexOf("Android") > -1) {
-            const currentUrl = window.location.href;
-            window.location.href = "intent://" + currentUrl.replace(/^https?:\/\//, "") + "#Intent;scheme=http;package=com.android.chrome;end";
+            window.location.href = "intent://" + window.location.href.replace(/^https?:\/\//, "") + "#Intent;scheme=http;package=com.android.chrome;end";
             setTimeout(() => { document.getElementById('line-guide').style.display = 'block'; }, 2000);
         } else {
-            // iOS (iPhone 11 等) 顯示雙向引導
             document.getElementById('line-guide').style.display = 'block';
         }
     }
 }
 
-// --- 資料處理 ---
+// --- GAS 資料存取 ---
 async function fetchCards() {
     try {
-        const response = await fetch(GAS_URL);
-        cardData = await response.json();
+        const res = await fetch(GAS_URL);
+        cardData = await res.json();
         renderCards();
-    } catch (err) { console.error("Load Failed", err); }
+    } catch (err) { console.error("資料載入失敗"); }
 }
 
 async function saveCard() {
@@ -37,77 +49,51 @@ async function saveCard() {
     const name = document.getElementById('cardName').value.trim();
     const price = document.getElementById('cardPrice').value.trim();
     const desc = document.getElementById('cardBack').value.trim();
-    const imgUrl = document.getElementById('cardImg').value.trim();
-    const img = imgUrl || `https://picsum.photos/300/400?random=${Math.random()}`;
-    
-    if (!name || !price) return alert("請填寫名稱與價格");
+    const imgData = document.getElementById('cardImgBase64').value; // 這裡存的是 Base64
+
+    if (!name || !price) return alert("請填寫產品名稱與價格");
+    if (!imgData) return alert("請上傳產品圖片");
+
     const btn = document.getElementById('saveBtn');
-    btn.innerText = "儲存中...";
+    btn.innerText = "資料上傳中...";
+    btn.disabled = true;
+
     try {
-        await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "save", index, name, price, img, desc }) });
+        await fetch(GAS_URL, { 
+            method: "POST", 
+            body: JSON.stringify({ action: "save", index, name, price, img: imgData, desc }) 
+        });
         await fetchCards();
         toggleAdmin(false);
-    } catch (err) { alert("儲存失敗"); }
-    finally { btn.innerText = "儲存資訊"; }
-}
-
-// --- 語音搜尋 ---
-function startVoiceSearch() {
-    if (navigator.vibrate) navigator.vibrate(50);
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return alert("瀏覽器不支援語音辨識，請切換至 Chrome/Safari");
-    
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'zh-TW';
-    const voiceBtn = document.getElementById('voiceBtn');
-
-    recognition.onstart = () => { voiceBtn.classList.add('recording'); searchInput.placeholder = "聆聽中..."; };
-    recognition.onresult = (e) => { searchInput.value = e.results[0][0].transcript.replace(/[。\.]$/, ""); searchCard(); };
-    recognition.onerror = () => { voiceBtn.classList.remove('recording'); };
-    recognition.onend = () => { voiceBtn.classList.remove('recording'); searchInput.placeholder = "搜尋產品..."; };
-    recognition.start();
-}
-
-// --- 搜尋功能 ---
-function searchCard() {
-    searchInput.blur();
-    const keyword = searchInput.value.trim().toLowerCase();
-    if (!keyword) return;
-    const index = cardData.findIndex(item => item.name.toLowerCase().includes(keyword));
-    if (index !== -1) {
-        currentRotation = -(index * (360 / cardData.length));
-        carousel.style.transition = 'transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)';
-        carousel.style.transform = `rotateY(${currentRotation}deg)`;
+    } catch (err) { 
+        alert("儲存失敗，可能原因：圖片過大超出 Google Sheets 儲存格上限"); 
+    } finally { 
+        btn.innerText = "儲存資訊"; 
+        btn.disabled = false;
     }
 }
-searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') searchCard(); });
 
-// --- 渲染卡片 ---
+// --- 介面操作 ---
 function renderCards() {
     carousel.innerHTML = "";
     const total = cardData.length;
     if (total === 0) return;
     const angleStep = 360 / total;
-    const radius = Math.max(300, total * 45);
+    const radius = Math.max(280, total * 40);
 
     cardData.forEach((item, i) => {
         const cardHtml = `
             <div class="card" style="transform: rotateY(${i * angleStep}deg) translateZ(${radius}px)">
                 <div class="card-inner" onclick="handleCardClick(event, this)">
                     <div class="front">
-                        <img src="${item.img}" alt="p">
-                        <div class="info-tag">
-                            <div class="info-name">${item.name}</div>
-                            <div class="info-price">$${item.price}</div>
-                        </div>
+                        <img src="${item.img}" loading="lazy">
+                        <div class="info-tag"><div class="info-name">${item.name}</div><div class="info-price">$${item.price}</div></div>
                     </div>
                     <div class="back">
-                        <button class="btn-edit" onclick="event.stopPropagation(); openEditMode(${i})">
-                            <svg viewBox="0 0 24 24" width="16" fill="#888"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                        </button>
+                        <button style="position:absolute; top:10px; right:10px; background:none; border:1px solid #333; border-radius:50%; color:#888;" onclick="event.stopPropagation(); openEditMode(${i})">⚙️</button>
                         <strong style="color:#00f2ff; font-size:16px;">${item.name}</strong>
-                        <div style="color:#00f2ff; font-weight:bold;">$${item.price}</div>
-                        <p style="font-size:12px; color:#ccc; white-space:pre-wrap; margin:0; overflow-y:auto;">${item.desc}</p>
+                        <div style="font-weight:bold;">$${item.price}</div>
+                        <p style="font-size:12px; color:#ccc; white-space:pre-wrap; overflow-y:auto; margin:0;">${item.desc}</p>
                     </div>
                 </div>
             </div>`;
@@ -115,45 +101,66 @@ function renderCards() {
     });
 }
 
-// --- 旋轉與互動邏輯 ---
-let isDragging = false, startX = 0, currentRotation = 0, tempRotation = 0, lastMoveDistance = 0;
-function handleStart(e) { if (adminPanel.classList.contains('active')) return; isDragging = true; lastMoveDistance = 0; startX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX; carousel.style.transition = 'none'; }
-function handleMove(e) { if (!isDragging) return; if (e.cancelable) e.preventDefault(); const x = e.type.includes('touch') ? e.touches[0].pageX : e.pageX; const moveX = x - startX; lastMoveDistance = Math.abs(moveX); tempRotation = currentRotation + moveX * 0.3; carousel.style.transform = `rotateY(${tempRotation}deg)`; }
-function handleEnd() { if (!isDragging) return; isDragging = false; currentRotation = tempRotation; carousel.style.transition = 'transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)'; }
-function handleCardClick(e, element) { if (lastMoveDistance > 10) return; element.classList.toggle('is-flipped'); }
-
-// --- 面板控制 ---
 function openEditMode(index) {
     const item = cardData[index];
-    document.getElementById('panelTitle').innerText = "編輯產品資訊";
     document.getElementById('editIndex').value = index;
     document.getElementById('cardName').value = item.name;
     document.getElementById('cardPrice').value = item.price;
-    document.getElementById('cardImg').value = item.img;
     document.getElementById('cardBack').value = item.desc;
+    document.getElementById('cardImgBase64').value = item.img;
+    document.getElementById('imgPreview').src = item.img;
+    document.getElementById('previewWrapper').style.display = 'block';
     toggleAdmin(true);
 }
+
 function openAddMode() {
-    document.getElementById('panelTitle').innerText = "新增產品資訊";
     document.getElementById('editIndex').value = "-1";
     document.getElementById('cardName').value = "";
     document.getElementById('cardPrice').value = "";
-    document.getElementById('cardImg').value = "";
     document.getElementById('cardBack').value = "";
+    document.getElementById('cardImgBase64').value = "";
+    document.getElementById('previewWrapper').style.display = 'none';
+    document.getElementById('uploadStatus').innerText = "📷 點擊上傳圖片";
     toggleAdmin(true);
 }
+
+// 語音搜尋與滑動邏輯
+function startVoiceSearch() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return alert("請切換瀏覽器以使用語音搜尋");
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'zh-TW';
+    recognition.onstart = () => document.getElementById('voiceBtn').classList.add('recording');
+    recognition.onresult = (e) => { searchInput.value = e.results[0][0].transcript.replace(/[。\.]$/,""); searchCard(); };
+    recognition.onend = () => document.getElementById('voiceBtn').classList.remove('recording');
+    recognition.start();
+}
+
+function searchCard() {
+    const key = searchInput.value.trim().toLowerCase();
+    const idx = cardData.findIndex(d => d.name.toLowerCase().includes(key));
+    if (idx !== -1) {
+        currentRotation = -(idx * (360 / cardData.length));
+        carousel.style.transform = `rotateY(${currentRotation}deg)`;
+    }
+}
+
+let isDragging = false, startX = 0, currentRotation = 0, tempRotation = 0, lastMoveDistance = 0;
+function handleStart(e) { if (adminPanel.classList.contains('active')) return; isDragging = true; startX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX; carousel.style.transition = 'none'; }
+function handleMove(e) { if (!isDragging) return; const x = e.type.includes('touch') ? e.touches[0].pageX : e.pageX; const dist = x - startX; lastMoveDistance = Math.abs(dist); tempRotation = currentRotation + dist * 0.3; carousel.style.transform = `rotateY(${tempRotation}deg)`; }
+function handleEnd() { if (!isDragging) return; isDragging = false; currentRotation = tempRotation; carousel.style.transition = 'transform 0.8s'; }
+function handleCardClick(e, el) { if (lastMoveDistance > 10) return; el.classList.toggle('is-flipped'); }
+
 function toggleAdmin(isOpen) { adminPanel.classList.toggle('active', isOpen); overlay.style.display = isOpen ? 'block' : 'none'; }
 function toggleSidebar(isOpen) { document.getElementById('sidebar').classList.toggle('open', isOpen); overlay.style.display = isOpen ? 'block' : 'none'; }
 overlay.onclick = () => { toggleAdmin(false); toggleSidebar(false); };
 
-// 事件綁定
-window.addEventListener('touchstart', handleStart, { passive: false });
-window.addEventListener('touchmove', handleMove, { passive: false });
-window.addEventListener('touchend', handleEnd, { passive: false });
+window.addEventListener('touchstart', handleStart, {passive:false});
+window.addEventListener('touchmove', handleMove, {passive:false});
+window.addEventListener('touchend', handleEnd);
 window.addEventListener('mousedown', handleStart);
 window.addEventListener('mousemove', handleMove);
 window.addEventListener('mouseup', handleEnd);
 
-// 初始化
 handleLineInApp();
 fetchCards();
