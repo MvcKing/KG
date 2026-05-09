@@ -3,21 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D 無限旋轉輪播</title>
+    <title>3D 互動旋轉翻面卡片</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <div class="instruction">左右拖拽旋轉輪播，點擊卡片進行翻面</div>
+
     <div class="container">
         <div class="carousel" id="carousel">
-            <div class="card" style="--i:1;"><img src="https://picsum.photos/300/400?random=1" alt="Image 1"></div>
-            <div class="card" style="--i:2;"><img src="https://picsum.photos/300/400?random=2" alt="Image 2"></div>
-            <div class="card" style="--i:3;"><img src="https://picsum.photos/300/400?random=3" alt="Image 3"></div>
-            <div class="card" style="--i:4;"><img src="https://picsum.photos/300/400?random=4" alt="Image 4"></div>
-            <div class="card" style="--i:5;"><img src="https://picsum.photos/300/400?random=5" alt="Image 5"></div>
-            <div class="card" style="--i:6;"><img src="https://picsum.photos/300/400?random=6" alt="Image 6"></div>
-            <div class="card" style="--i:7;"><img src="https://picsum.photos/300/400?random=7" alt="Image 7"></div>
-            <div class="card" style="--i:8;"><img src="https://picsum.photos/300/400?random=8" alt="Image 8"></div>
+            <div class="card" style="--i:1;">
+                <div class="card-inner">
+                    <div class="front"><img src="https://picsum.photos/300/400?random=1" alt=""><span>正面資訊 1</span></div>
+                    <div class="back"><h3>背面詳情 1</h3><p>這是背面的內容介紹。</p></div>
+                </div>
+            </div>
+            <div class="card" style="--i:2;">
+                <div class="card-inner">
+                    <div class="front"><img src="https://picsum.photos/300/400?random=2" alt=""><span>正面資訊 2</span></div>
+                    <div class="back"><h3>背面詳情 2</h3><p>這是背面的內容介紹。</p></div>
+                </div>
+            </div>
+            <div class="card" style="--i:8;">
+                <div class="card-inner">
+                    <div class="front"><img src="https://picsum.photos/300/400?random=8" alt=""><span>正面資訊 8</span></div>
+                    <div class="back"><h3>背面詳情 8</h3><p>這是背面的內容介紹。</p></div>
+                </div>
+            </div>
         </div>
     </div>
 
