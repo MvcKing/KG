@@ -8,6 +8,23 @@
 </head>
 <body>
 
+    <!-- LINE 專用引導遮罩 -->
+    <div id="line-guide">
+        <div class="guide-arrow">▼</div>
+        <div class="guide-content">
+            <h2 style="color: #ff2d55;">偵測到 LINE 瀏覽器</h2>
+            <p>語音搜尋功能受限</p>
+            <div class="guide-step">
+                <span>1</span> 點擊右上角「三個點」圖示
+            </div>
+            <div class="guide-step">
+                <span>2</span> 選擇「使用預設瀏覽器開啟」
+            </div>
+            <div class="neon-line"></div>
+            <p style="font-size: 14px; color: #888;">跳轉後即可正常使用麥克風</p>
+        </div>
+    </div>
+
     <div class="admin-overlay" id="overlay"></div>
 
     <!-- 側邊導航欄 -->
@@ -35,15 +52,12 @@
         </div>
     </div>
 
-    <!-- 3D 展示核心區 -->
     <div class="container">
         <div class="carousel" id="carousel"></div>
     </div>
 
-    <!-- 浮動新增按鈕 -->
     <button class="fab-btn" onclick="openAddMode()">+</button>
 
-    <!-- 編輯面板 -->
     <div class="admin-panel" id="adminPanel">
         <div class="close-handle"></div>
         <h3 id="panelTitle" style="color:#00f2ff; margin-bottom:15px; text-align: center;">產品編輯</h3>
@@ -52,9 +66,9 @@
             <input type="text" id="cardName" placeholder="產品名稱">
             <input type="number" id="cardPrice" placeholder="銷售價格">
             <input type="text" id="cardImg" placeholder="圖片 URL (可留空)">
-            <textarea id="cardBack" placeholder="產品資訊 (支援換行)..." rows="3"></textarea>
+            <textarea id="cardBack" placeholder="產品資訊..." rows="3"></textarea>
             <button id="saveBtn" class="neon-btn" style="width: 100%; height: 45px; border-radius: 10px;" onclick="saveCard()">儲存資訊</button>
-            <button onclick="toggleAdmin(false)" style="width:100%; margin-top:10px; background:none; border:none; color:#666; cursor:pointer;">取消修改</button>
+            <button onclick="toggleAdmin(false)" style="width:100%; margin-top:10px; background:none; border:none; color:#666; cursor:pointer;">取消</button>
         </div>
     </div>
 
