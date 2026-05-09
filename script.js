@@ -1,19 +1,31 @@
 let cardData = [
-    { name: "保濕洗髮精", img: "https://picsum.photos/300/400?random=101", desc: "【專業洗護】\n深層補水，\n還原髮絲彈性。" },
-    { name: "結構護髮素", img: "https://picsum.photos/300/400?random=102", desc: "【修復受損】\n自動填補空洞，\n鎖住色彩分子。" },
-    { name: "頭皮淨化液", img: "https://picsum.photos/300/400?random=103", desc: "【溫和去角質】\n舒緩頭皮壓力，\n清爽不油膩。" }
+    { name: "極致洗髮精", img: "https://picsum.photos/300/400?random=11", desc: "【深層淨化】\n適合各種髮質使用，\n洗後清爽無負擔。" },
+    { name: "炫光護髮膜", img: "https://picsum.photos/300/400?random=22", desc: "【瞬間光澤】\n鎖住水分與色澤，\n打造絲緞般觸感。" }
 ];
 
 const carousel = document.getElementById('carousel');
 const adminPanel = document.getElementById('adminPanel');
+const overlay = document.getElementById('overlay');
 const openDrawer = document.getElementById('openDrawer');
 const closeDrawer = document.getElementById('closeDrawer');
 const addBtn = document.getElementById('addBtn');
 
-// 面板控制
-openDrawer.onclick = () => adminPanel.classList.add('active');
-closeDrawer.onclick = () => adminPanel.classList.remove('active');
+// 面板控制功能 (開/關)
+function togglePanel(isOpen) {
+    if (isOpen) {
+        adminPanel.classList.add('active');
+        overlay.style.display = 'block';
+    } else {
+        adminPanel.classList.remove('active');
+        overlay.style.display = 'none';
+    }
+}
 
+openDrawer.onclick = () => togglePanel(true);
+closeDrawer.onclick = () => togglePanel(false);
+overlay.onclick = () => togglePanel(false); // 點擊背景遮罩即可收納
+
+// 旋轉變數
 let isDragging = false;
 let startX = 0;
 let currentRotation = 0;
@@ -35,8 +47,8 @@ function renderCards() {
                         <div class="title-tag">${item.name}</div>
                     </div>
                     <div class="back">
-                        <strong>${item.name}</strong><hr style="margin:8px 0; border:0; border-top:1px solid #444;">
-                        <p style="font-size:12px; text-align:left;">${item.desc}</p>
+                        <strong style="color:#00f2ff">${item.name}</strong><hr style="margin:8px 0; border:0; border-top:1px solid #333;">
+                        <p style="font-size:13px; line-height:1.6;">${item.desc}</p>
                     </div>
                 </div>
             </div>`;
@@ -89,24 +101,24 @@ addBtn.onclick = () => {
     const img = document.getElementById('cardImg').value || `https://picsum.photos/300/400?random=${Math.random()}`;
     const desc = document.getElementById('cardBack').value;
 
-    if (!name || !desc) return alert("請填寫內容");
+    if (!name || !desc) return alert("請填寫產品完整資訊");
 
     cardData.push({ name, img, desc });
     renderCards();
-    adminPanel.classList.remove('active'); // 新增後自動收起
+    togglePanel(false); // 新增完自動收起
     
-    // 清空
+    // 清空輸入
     document.getElementById('cardName').value = "";
     document.getElementById('cardBack').value = "";
     
-    // 轉向新卡片
+    // 定位到最新卡片
     setTimeout(() => {
         currentRotation = -((cardData.length - 1) * (360 / cardData.length));
         carousel.style.transform = `rotateY(${currentRotation}deg)`;
     }, 400);
 };
 
-// 事件綁定
+// 事件監聽 (相容手機與電腦)
 window.addEventListener('mousedown', handleStart);
 window.addEventListener('mousemove', handleMove);
 window.addEventListener('mouseup', handleEnd);

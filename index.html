@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>3D 髮妝品展示</title>
+    <title>3D 黑暗炫光展示</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+    <!-- 遮罩層：點擊可直接關閉面板 -->
+    <div class="admin-overlay" id="overlay"></div>
 
     <div class="search-bar">
         <input type="text" id="searchInput" placeholder="搜尋髮妝品...">
@@ -17,20 +20,21 @@
         <div class="carousel" id="carousel"></div>
     </div>
 
-    <!-- 浮動新增按鈕 -->
+    <!-- 炫光 FAB 按鈕 -->
     <button class="fab-btn" id="openDrawer">+</button>
 
-    <!-- 隱藏抽屜面板 -->
+    <!-- 抽屜面板 -->
     <div class="admin-panel" id="adminPanel">
+        <div class="close-handle"></div> <!-- 裝飾用拉桿 -->
         <div class="admin-header">
-            <h3>新增產品卡片</h3>
-            <button class="close-btn" id="closeDrawer">&times;</button>
+            <h3 style="color:#00f2ff;">新增髮妝產品</h3>
+            <button id="closeDrawer" style="background:none; border:none; color:#888; font-size:24px;">&times;</button>
         </div>
         <div class="form-group">
-            <input type="text" id="cardName" placeholder="產品名稱">
-            <input type="text" id="cardImg" placeholder="圖片網址 (選填)">
-            <textarea id="cardBack" placeholder="產品詳細描述 (支援換行)"></textarea>
-            <button id="addBtn" style="background:#28a745; color:white; border:none; padding:12px; border-radius:8px;">確認新增</button>
+            <input type="text" id="cardName" placeholder="產品名稱 (如：洗髮精)">
+            <input type="text" id="cardImg" placeholder="圖片連結 (URL)">
+            <textarea id="cardBack" placeholder="背面介紹內容..."></textarea>
+            <button id="addBtn">確認新增至輪播</button>
         </div>
     </div>
 
