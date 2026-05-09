@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>3D Neon Mall - Editor Pro</title>
+    <title>3D Neon Mall - Icon Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -38,14 +38,14 @@
         <div class="carousel" id="carousel"></div>
     </div>
 
-    <!-- 浮動新增按鈕 (清除編輯狀態並開啟面板) -->
+    <!-- 浮動新增按鈕 -->
     <button class="fab-btn" onclick="openAddMode()">+</button>
 
-    <!-- 編輯面板 (新增/更新通用) -->
+    <!-- 編輯面板 -->
     <div class="admin-panel" id="adminPanel">
         <div class="close-handle"></div>
         <h3 id="panelTitle" style="color:#00f2ff; margin-bottom:15px; text-align: center;">新增產品資訊</h3>
-        <input type="hidden" id="editIndex" value="-1"> <!-- 用於紀錄正在編輯哪一張 -->
+        <input type="hidden" id="editIndex" value="-1">
         <div class="form-group">
             <input type="text" id="cardName" placeholder="產品名稱">
             <input type="number" id="cardPrice" placeholder="銷售價格">

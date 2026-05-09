@@ -53,9 +53,17 @@ html, body {
 .info-name { flex: 1.8; display: flex; align-items: center; justify-content: center; font-size: 13px; border-right: 1px solid #222; color: #fff; padding: 0 5px; text-align: center; }
 .info-price { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: bold; color: #00f2ff; text-shadow: 0 0 8px rgba(0, 242, 255, 0.6); }
 
+/* 背面圖示按鈕優化 */
 .back { transform: rotateY(180deg); padding: 15px; box-sizing: border-box; background: #0a0a0a; display: flex; flex-direction: column; }
-.btn-edit { align-self: flex-end; background: none; border: 1px solid #555; color: #888; font-size: 11px; padding: 2px 8px; border-radius: 5px; cursor: pointer; margin-bottom: 5px; }
-.btn-edit:hover { border-color: #00f2ff; color: #00f2ff; }
+.btn-edit { 
+    align-self: flex-end; background: none; border: 1px solid #333; 
+    color: #888; width: 32px; height: 32px; 
+    border-radius: 50%; cursor: pointer; margin-bottom: 5px;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.3s;
+}
+.btn-edit svg { width: 16px; height: 16px; fill: currentColor; }
+.btn-edit:hover { border-color: #00f2ff; color: #00f2ff; background: rgba(0, 242, 255, 0.05); }
 
 /* --- 面板 --- */
 .admin-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 250; display: none; backdrop-filter: blur(4px); }

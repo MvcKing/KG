@@ -1,4 +1,3 @@
-// 預設 5 張美髮產品卡片
 let cardData = [
     { name: "黑鑽逆時洗髮精", price: "980", img: "https://picsum.photos/300/400?random=1", desc: "【極致修護】\n蘊含珍稀黑鑽精萃，\n深層修復受損髮質，\n重現亮澤。" },
     { name: "藍寶石持色露", price: "850", img: "https://picsum.photos/300/400?random=2", desc: "【專為染後設計】\n中和枯黃色調，\n維持髮色鮮艷度，\n長效保濕。" },
@@ -12,7 +11,6 @@ const sidebar = document.getElementById('sidebar');
 const adminPanel = document.getElementById('adminPanel');
 const overlay = document.getElementById('overlay');
 
-// UI 控制
 function toggleSidebar(isOpen) {
     sidebar.classList.toggle('open', isOpen);
     overlay.style.display = isOpen ? 'block' : 'none';
@@ -25,7 +23,6 @@ function toggleAdmin(isOpen) {
 
 overlay.onclick = () => { toggleSidebar(false); toggleAdmin(false); };
 
-// 開啟「新增」模式 (清空暫存編號)
 function openAddMode() {
     document.getElementById('panelTitle').innerText = "新增產品資訊";
     document.getElementById('editIndex').value = "-1";
@@ -36,7 +33,6 @@ function openAddMode() {
     toggleAdmin(true);
 }
 
-// 開啟「編輯」模式 (帶入舊資料)
 function openEditMode(index) {
     const item = cardData[index];
     document.getElementById('panelTitle').innerText = "編輯產品資訊";
@@ -48,7 +44,6 @@ function openEditMode(index) {
     toggleAdmin(true);
 }
 
-// 渲染卡片
 function renderCards() {
     carousel.innerHTML = "";
     const total = cardData.length;
@@ -56,6 +51,9 @@ function renderCards() {
     const radius = Math.max(300, total * 40);
 
     cardData.forEach((item, i) => {
+        // 這是畫筆(Edit)的 SVG 圖示代碼
+        const editIcon = `<svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
+
         const cardHtml = `
             <div class="card" id="card-${i}" style="transform: rotateY(${i * angleStep}deg) translateZ(${radius}px)">
                 <div class="card-inner" onclick="handleCardClick(event, this)">
@@ -67,7 +65,9 @@ function renderCards() {
                         </div>
                     </div>
                     <div class="back">
-                        <button class="btn-edit" onclick="event.stopPropagation(); openEditMode(${i})">編輯</button>
+                        <button class="btn-edit" onclick="event.stopPropagation(); openEditMode(${i})">
+                            ${editIcon}
+                        </button>
                         <strong style="color:#00f2ff; font-size:16px;">${item.name}</strong>
                         <div style="font-size:16px; color:#00f2ff; margin-bottom:10px;">$${item.price}</div>
                         <p style="font-size:13px; color:#ccc; line-height:1.5; white-space:pre-wrap; margin:0;">${item.desc}</p>
@@ -78,7 +78,6 @@ function renderCards() {
     });
 }
 
-// 儲存邏輯 (判斷是新增還是更新)
 function saveCard() {
     const index = parseInt(document.getElementById('editIndex').value);
     const name = document.getElementById('cardName').value.trim();
@@ -90,15 +89,11 @@ function saveCard() {
     if (!name || !price || !desc) return alert("請完整填寫產品資訊");
 
     const newData = { name, price, img, desc };
-
     if (index === -1) {
-        // 新增模式
         cardData.push(newData);
     } else {
-        // 更新模式
         cardData[index] = newData;
     }
-
     renderCards();
     toggleAdmin(false);
 }
