@@ -1,80 +1,60 @@
 :root {
     --primary: #00f2ff;
-    --bg-dark: #0a0a0a;
-    --card-bg: #111111;
-    --neon-glow: 0 0 10px rgba(0, 242, 255, 0.5);
+    --neon-glow: 0 0 12px rgba(0, 242, 255, 0.6);
 }
 
-* { box-sizing: border-box; font-family: "Microsoft JhengHei", sans-serif; }
-body {
-    margin: 0; background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
-    color: #fff; width: 100vw; height: 100vh; overflow: hidden;
-}
+* { box-sizing: border-box; font-family: "Microsoft JhengHei", sans-serif; -webkit-tap-highlight-color: transparent; }
+body { margin: 0; background: #000; color: #fff; width: 100vw; height: 100vh; overflow: hidden; }
 
-/* LINE 引導樣式 */
-.line-guide {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-    z-index: 9999; align-items: center; justify-content: center; text-align: center;
-}
-.guide-content { border: 1px solid var(--primary); padding: 20px; border-radius: 15px; margin: 20px; }
-.guide-content button { margin-top: 15px; background: var(--primary); border: none; padding: 10px 20px; border-radius: 5px; }
-
-/* 頂部導航 */
+/* 搜尋列樣式 */
 .header {
-    position: fixed; top: 0; width: 100%; height: 60px;
-    background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-    display: flex; align-items: center; justify-content: center; padding: 0 15px; z-index: 500; gap: 12px;
+    position: fixed; top: 0; width: 100%; height: 70px;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: center; padding: 0 15px; z-index: 500; border-bottom: 1px solid #222;
 }
-.search-group { display: flex; align-items: center; gap: 5px; width: 100%; max-width: 350px; }
-.search-group input { flex: 1; background: #222; border: 1px solid #333; color: #fff; padding: 8px 12px; border-radius: 20px; outline: none; }
-.icon-btn, .search-btn { background: transparent; border: 1px solid var(--primary); color: var(--primary); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.search-group { display: flex; align-items: center; gap: 8px; width: 100%; max-width: 380px; }
+.search-input-wrapper { position: relative; flex: 1; }
+.search-input-wrapper input { width: 100%; background: #222; border: 1px solid #444; color: #fff; padding: 10px 40px 10px 15px; border-radius: 25px; outline: none; }
+.inner-mic-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--primary); font-size: 18px; cursor: pointer; }
 
-/* 側邊欄 */
-.sidebar { position: fixed; top: 0; left: 0; width: 260px; height: 100%; background: #0d0d0d; z-index: 1000; transform: translateX(-100%); transition: 0.3s; border-right: 1px solid #222; }
-.sidebar.open { transform: translateX(0); }
-.sidebar-header { padding: 20px; font-weight: bold; color: var(--primary); border-bottom: 1px solid #222; }
-.nav-link { display: flex; align-items: center; padding: 15px; color: #fff; text-decoration: none; gap: 10px; }
-
-/* 3D 轉盤 */
-.scene { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 320px; perspective: 1200px; }
-.carousel { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.7s ease-out; }
-.card { position: absolute; width: 220px; height: 320px; }
+/* 3D 場景 */
+.scene { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 320px; perspective: 1200px; cursor: grab; }
+.scene:active { cursor: grabbing; }
+.carousel { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.card { position: absolute; width: 220px; height: 320px; user-select: none; }
 .card-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: 0.6s; border-radius: 15px; }
 .card-inner.is-flipped { transform: rotateY(180deg); }
 
-.front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); }
-.front img { width: 100%; height: 75%; object-fit: cover; border-radius: 15px 15px 0 0; }
-.info-tag { height: 25%; display: flex; align-items: center; padding: 0 10px; font-size: 13px; }
+.front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; background: #111; border: 1px solid rgba(0, 242, 255, 0.3); overflow: hidden; }
+.front img { width: 100%; height: 75%; object-fit: cover; pointer-events: none; }
+.info-tag { height: 25%; display: flex; align-items: center; padding: 0 12px; font-size: 13px; font-weight: bold; }
 
-/* 編輯按鈕：炫光 */
+/* 編輯按鈕 */
 .btn-edit-neon {
-    position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border-radius: 50%;
+    position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 50%;
     background: rgba(0, 242, 255, 0.1); border: 1px solid var(--primary); color: var(--primary);
-    display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 100;
-    box-shadow: var(--neon-glow); animation: neon-pulse 1.5s infinite;
+    display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: var(--neon-glow);
 }
-@keyframes neon-pulse { 0% { box-shadow: 0 0 5px var(--primary); } 50% { box-shadow: 0 0 15px var(--primary); } 100% { box-shadow: 0 0 5px var(--primary); } }
 
-.back { transform: rotateY(180deg); padding: 45px 15px 15px; }
-.back p { font-size: 13px; color: #ccc; line-height: 1.5; overflow-y: auto; height: 180px; }
+/* 麥克風 (面板) */
+.textarea-container { position: relative; margin-top: 10px; }
+.mic-btn-floating { position: absolute; bottom: 12px; right: 12px; background: #222; border: 1px solid var(--primary); color: var(--primary); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
 
-/* 麥克風樣式 */
-.textarea-container { position: relative; margin-bottom: 10px; }
-.mic-btn {
-    position: absolute; bottom: 10px; right: 10px; background: #222; border: 1px solid var(--primary);
-    color: var(--primary); width: 35px; height: 35px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
-}
-.mic-btn.listening { background: var(--primary); color: #000; animation: blink 1s infinite; }
-@keyframes blink { 50% { opacity: 0.5; } }
-
-/* 面板 */
-.panel { position: fixed; bottom: -100%; left: 0; width: 100%; background: #0d0d0d; border-top: 2px solid var(--primary); border-radius: 20px 20px 0 0; padding: 20px; z-index: 2000; transition: 0.4s; }
+/* 面板控制 */
+.panel { position: fixed; bottom: -100%; left: 0; width: 100%; background: #0d0d0d; border-top: 2px solid var(--primary); border-radius: 20px 20px 0 0; padding: 25px 20px; z-index: 2000; transition: 0.5s cubic-bezier(0.1, 0.7, 0.1, 1); }
 .panel.active { bottom: 0; }
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 600; }
-.form-body input, .form-body textarea { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; color: #fff; margin-bottom: 10px; border-radius: 8px; }
-.input-flex { display: flex; gap: 8px; }
-.btn-save { width: 100%; background: var(--primary); color: #000; font-weight: bold; padding: 15px; border: none; border-radius: 10px; }
-.btn-del { width: 100%; background: transparent; color: #ff3b30; border: 1px solid #ff3b30; margin-top: 10px; padding: 10px; border-radius: 10px; }
-.fab { position: fixed; bottom: 30px; right: 25px; width: 56px; height: 56px; border-radius: 50%; background: #000; border: 1px solid var(--primary); color: var(--primary); font-size: 28px; z-index: 400; box-shadow: var(--neon-glow); }
-.upload-box { border: 1px dashed #444; padding: 15px; text-align: center; margin-bottom: 10px; border-radius: 10px; }
-.upload-box img { max-width: 100%; max-height: 120px; }
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 600; backdrop-filter: blur(2px); }
+.btn-save { width: 100%; background: var(--primary); color: #000; font-weight: bold; padding: 16px; border: none; border-radius: 12px; font-size: 16px; }
+.btn-del { width: 100%; background: transparent; color: #ff3b30; border: 1px solid #ff3b30; margin-top: 12px; padding: 10px; border-radius: 10px; }
+.upload-box { border: 1px dashed #444; padding: 20px; text-align: center; border-radius: 10px; cursor: pointer; background: #080808; }
+
+/* LINE 引導介面 */
+.line-guide { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+.guide-content { border: 2px solid var(--primary); padding: 30px 20px; border-radius: 20px; box-shadow: var(--neon-glow); max-width: 320px; }
+.highlight { color: var(--primary); font-weight: bold; text-decoration: underline; }
+.guide-btn { margin-top: 25px; background: var(--primary); border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; width: 100%; }
+
+/* 其他 */
+.fab { position: fixed; bottom: 30px; right: 25px; width: 60px; height: 60px; border-radius: 50%; background: #000; border: 1px solid var(--primary); color: var(--primary); font-size: 32px; z-index: 400; box-shadow: var(--neon-glow); }
+.sidebar { position: fixed; top: 0; left: 0; width: 260px; height: 100%; background: #0a0a0a; z-index: 1000; transform: translateX(-100%); transition: 0.3s; border-right: 1px solid #222; }
+.sidebar.open { transform: translateX(0); }

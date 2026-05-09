@@ -3,25 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kyogoku 產品資訊網</title>
+    <title>Kyogoku 產品資訊系統</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- LINE 瀏覽器引導提示 -->
+    <!-- 全域 LINE 環境導引 -->
     <div id="line-guide" class="line-guide">
         <div class="guide-content">
-            <p>偵測到 LINE 瀏覽器限制</p>
-            <p>請點擊右上角 <span style="color:#00f2ff;">「...」</span></p>
-            <p>選擇 <span style="color:#00f2ff;">「以預設瀏覽器開啟」</span> 以使用語音功能</p>
-            <button onclick="document.getElementById('line-guide').style.display='none'">我知道了</button>
+            <div class="guide-header">⚠️ 偵測到 LINE 瀏覽器環境</div>
+            <p>為確保「語音輸入」與「相機功能」正常運作：</p>
+            <p>1. 點擊螢幕 <span class="highlight">右上角</span> 或 <span class="highlight">右下角</span> 的 <span class="highlight">「...」</span></p>
+            <p>2. 選擇 <span class="highlight">「以預設瀏覽器開啟」</span> (Safari/Chrome)</p>
+            <button class="guide-btn" onclick="document.getElementById('line-guide').style.display='none'">我知道了</button>
         </div>
     </div>
 
     <div class="overlay" id="overlay" onclick="closeAllPanels()"></div>
 
+    <!-- 頂部搜尋與導航 -->
+    <header class="header">
+        <button class="icon-btn" onclick="toggleSidebar(true)">&#9776;</button>
+        <div class="search-group">
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput" placeholder="搜尋產品...">
+                <button class="inner-mic-btn" onclick="startSpeechRecognition('searchInput')">🎤</button>
+            </div>
+            <button class="search-btn" onclick="searchCard()">GO</button>
+        </div>
+    </header>
+
+    <!-- 3D 轉盤場景 -->
+    <main class="scene" id="scene">
+        <div class="carousel" id="carousel"></div>
+    </main>
+
+    <!-- 懸浮新增按鈕 -->
+    <button class="fab" onclick="openAddMode()">+</button>
+
+    <!-- 側邊選單 -->
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">系統導航</div>
+        <div class="sidebar-header">系統選單</div>
         <div class="sidebar-content">
             <a href="https://mvcking.github.io/Live-Streaming-Schedule/LiveStreamingSchedule.html" class="nav-link" target="_blank">
                 <img src="https://www.google.com/s2/favicons?sz=64&domain=mvcking.github.io" class="nav-icon">
@@ -30,55 +52,38 @@
         </div>
     </div>
 
-    <header class="header">
-        <button class="icon-btn" onclick="toggleSidebar(true)">&#9776;</button>
-        <div class="search-group">
-            <input type="text" id="searchInput" placeholder="搜尋產品...">
-            <button class="search-btn" onclick="searchCard()">GO</button>
-        </div>
-    </header>
-
-    <main class="scene">
-        <div class="carousel" id="carousel"></div>
-    </main>
-
-    <button class="fab" onclick="openAddMode()">+</button>
-
-    <!-- 編輯面板：移除取消按鈕，加入麥克風 -->
+    <!-- 編輯/新增產品面板 -->
     <div class="panel" id="adminPanel">
         <div class="panel-handle" onclick="toggleAdmin(false)"></div>
-        <h3 id="panelTitle">編輯產品</h3>
+        <h3 id="panelTitle">產品資訊</h3>
         <input type="hidden" id="editIndex" value="-1">
         
         <div class="form-body">
             <div class="input-flex">
                 <input type="text" id="cardName" placeholder="產品名稱">
-                <input type="number" id="cardPrice" placeholder="價格" style="width: 80px;">
+                <input type="number" id="cardPrice" placeholder="價格" style="width: 85px;">
             </div>
             
             <div class="upload-box" onclick="document.getElementById('cardImgFile').click()">
                 <div id="uploadPlaceholder">
                     <span class="cam">📸</span>
-                    <p id="uploadStatus">相機拍照或上傳</p>
+                    <p id="uploadStatus">拍照或上傳 (自動壓縮)</p>
                 </div>
-                <input type="file" id="cardImgFile" accept="image/*" capture="environment" style="display:none" onchange="previewImage(this)">
+                <input type="file" id="cardImgFile" accept="image/*" capture="environment" style="display:none" onchange="handleImageUpload(this)">
                 <div id="previewWrapper" style="display:none;">
                     <img id="imgPreview">
                 </div>
             </div>
             <input type="hidden" id="cardImgBase64"> 
 
-            <!-- 語音輸入區域 -->
             <div class="textarea-container">
-                <textarea id="cardBack" placeholder="輸入產品規格介紹..." rows="4"></textarea>
-                <button class="mic-btn" id="micBtn" onclick="startSpeechRecognition()">
-                    <span id="mic-icon">🎤</span>
-                </button>
+                <textarea id="cardBack" placeholder="產品規格與介紹..." rows="4"></textarea>
+                <button class="mic-btn-floating" onclick="startSpeechRecognition('cardBack')">🎤</button>
             </div>
             
             <div class="panel-btns">
                 <button id="saveBtn" class="btn-save" onclick="saveCard()">確認儲存</button>
-                <button id="deleteBtn" class="btn-del" style="display:none;" onclick="deleteCard()">刪除產品</button>
+                <button id="deleteBtn" class="btn-del" style="display:none;" onclick="deleteCard()">刪除此產品</button>
             </div>
         </div>
     </div>
