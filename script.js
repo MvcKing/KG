@@ -3,7 +3,44 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbxGWU6PQskSbaPTj0jNbmCw
 let cardData = [];
 let isDragging = false, startX = 0, currentRotation = 0, tempRotation = 0, lastMoveDistance = 0;
 
-// --- 初始化與渲染 ---
+// --- 語音辨識邏輯 ---
+function startSpeechRecognition() {
+    const isLine = /Line/i.test(navigator.userAgent);
+    if (isLine) {
+        document.getElementById('line-guide').style.display = 'flex';
+        return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        alert("您的瀏覽器不支援語音輸入，請使用 Chrome 或 Safari");
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'zh-TW';
+    const micBtn = document.getElementById('micBtn');
+    const micIcon = document.getElementById('mic-icon');
+
+    recognition.onstart = () => {
+        micBtn.classList.add('listening');
+        micIcon.innerText = "🛑";
+    };
+
+    recognition.onresult = (event) => {
+        const text = event.results[0][0].transcript;
+        document.getElementById('cardBack').value += text;
+    };
+
+    recognition.onend = () => {
+        micBtn.classList.remove('listening');
+        micIcon.innerText = "🎤";
+    };
+
+    recognition.start();
+}
+
+// --- 初始化渲染 ---
 async function fetchCards() {
     try {
         const res = await fetch(GAS_URL);
@@ -15,9 +52,7 @@ async function fetchCards() {
 function renderCards() {
     const carousel = document.getElementById('carousel');
     carousel.innerHTML = "";
-    if (cardData.length === 0) return;
-    
-    const angleStep = 360 / cardData.length;
+    const angleStep = 360 / Math.max(1, cardData.length);
     const radius = Math.max(260, cardData.length * 40);
 
     cardData.forEach((item, i) => {
@@ -46,20 +81,7 @@ function renderCards() {
     });
 }
 
-// --- 表單功能 ---
-function previewImage(input) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            document.getElementById('imgPreview').src = e.target.result;
-            document.getElementById('cardImgBase64').value = e.target.result;
-            document.getElementById('previewWrapper').style.display = 'block';
-            document.getElementById('uploadPlaceholder').style.display = 'none';
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
+// --- 表單控制 ---
 function openEditMode(index) {
     const item = cardData[index];
     document.getElementById('panelTitle').innerText = "編輯產品";
@@ -88,35 +110,39 @@ function openAddMode() {
     toggleAdmin(true);
 }
 
-// --- 資料傳送 ---
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            document.getElementById('imgPreview').src = e.target.result;
+            document.getElementById('cardImgBase64').value = e.target.result;
+            document.getElementById('previewWrapper').style.display = 'block';
+            document.getElementById('uploadPlaceholder').style.display = 'none';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
 async function saveCard() {
     const index = parseInt(document.getElementById('editIndex').value);
     const name = document.getElementById('cardName').value;
     const price = document.getElementById('cardPrice').value;
     const desc = document.getElementById('cardBack').value;
     const img = document.getElementById('cardImgBase64').value;
-
     if (!name || !img) return alert("名稱與圖片為必填");
-    
-    document.getElementById('saveBtn').innerText = "傳送中...";
-    await fetch(GAS_URL, {
-        method: "POST", mode: 'no-cors',
-        body: JSON.stringify({ action: "save", index, name, price, img, desc })
-    });
+    document.getElementById('saveBtn').innerText = "處理中...";
+    await fetch(GAS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify({ action: "save", index, name, price, img, desc }) });
     location.reload();
 }
 
 async function deleteCard() {
     if (!confirm("確定刪除？")) return;
     const index = parseInt(document.getElementById('editIndex').value);
-    await fetch(GAS_URL, {
-        method: "POST", mode: 'no-cors',
-        body: JSON.stringify({ action: "delete", index })
-    });
+    await fetch(GAS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify({ action: "delete", index }) });
     location.reload();
 }
 
-// --- 控制與動畫 ---
+// --- 基礎介面控制 ---
 function toggleAdmin(isOpen) { 
     document.getElementById('adminPanel').classList.toggle('active', isOpen);
     document.getElementById('overlay').style.display = isOpen ? 'block' : 'none';
@@ -127,10 +153,9 @@ function toggleSidebar(isOpen) {
 }
 function closeAllPanels() { toggleAdmin(false); toggleSidebar(false); }
 
+// --- 觸控旋轉 ---
 function handleCardClick(e, el) { if (lastMoveDistance < 5) el.classList.toggle('is-flipped'); }
-
-// --- 滑鼠/觸控旋轉 (略, 與前版本一致確保功能穩定) ---
-const scene = document.querySelector('.scene');
+const carousel = document.getElementById('carousel');
 window.addEventListener('touchstart', e => { if(e.target.closest('.panel')) return; isDragging = true; startX = e.touches[0].pageX; carousel.style.transition='none'; lastMoveDistance=0; });
 window.addEventListener('touchmove', e => { if(!isDragging) return; const dist = e.touches[0].pageX - startX; lastMoveDistance = Math.abs(dist); tempRotation = currentRotation + dist * 0.3; carousel.style.transform = `rotateY(${tempRotation}deg)`; });
 window.addEventListener('touchend', () => { isDragging = false; currentRotation = tempRotation; carousel.style.transition='transform 0.7s'; });
