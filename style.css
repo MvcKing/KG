@@ -1,43 +1,27 @@
-/* --- 搜尋列優化 --- */
-.search-bar { 
-    position: fixed; top: 0; width: 100%; 
-    background: rgba(0,0,0,0.9); padding: 10px 15px; 
-    display: flex; gap: 10px; z-index: 100; box-sizing: border-box;
-    justify-content: center; /* 讓搜尋列在電腦版居中 */
-}
-
-.search-input-group { 
-    display: flex; gap: 8px; 
-    width: 100%;
-    max-width: 500px; /* 電腦版限制最大長度，不再過長 */
-}
-
-/* --- 上傳文字優化 --- */
-#uploadPlaceholder p {
-    margin: 2px 0;
-}
-
-/* 其餘樣式保持不變 */
+/* --- 基礎樣式 --- */
 html, body {
     margin: 0; padding: 0; width: 100vw; height: 100vh;
     overflow: hidden; position: fixed;
     background: radial-gradient(circle at center, #151515 0%, #000 100%);
-    color: white; font-family: "Microsoft JhengHei", sans-serif;
+    color: white; font-family: "Microsoft JhengHei", -apple-system, sans-serif;
 }
-#line-guide { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 9999; backdrop-filter: blur(10px); }
-.guide-arrow { position: absolute; right: 20px; font-size: 50px; color: #00f2ff; text-shadow: 0 0 15px #00f2ff; }
-.guide-arrow.top { top: 10px; transform: rotate(180deg); animation: bounce 1s infinite; }
-.guide-arrow.bottom { bottom: 15px; animation: bounce 1s infinite; }
-@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
-.guide-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 0 40px; text-align: center; }
-.guide-step { background: #111; border: 1px solid #333; padding: 12px; margin: 8px 0; border-radius: 12px; width: 100%; max-width: 280px; font-size: 14px; }
-.sidebar { position: fixed; top: 0; left: -280px; width: 260px; height: 100vh; background: #0a0a0a; border-right: 1px solid #00f2ff; transition: 0.4s; z-index: 300; padding: 20px; box-sizing: border-box; }
-.sidebar.open { left: 0; }
-.nav-item { display: flex; align-items: center; gap: 12px; padding: 15px; color: #fff; text-decoration: none; border-bottom: 1px solid #222; }
-.nav-icon { width: 24px; height: 24px; }
-.search-bar input { flex: 1; background: #111; border: 1px solid #333; color: #00f2ff; border-radius: 20px; padding: 8px 15px; outline: none; }
-.neon-btn { background: #000; color: #00f2ff; border: 1px solid #00f2ff; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-.voice-btn.recording { color: #ff2d55; border-color: #ff2d55; box-shadow: 0 0 10px #ff2d55; }
+
+/* --- 搜尋列優化 (電腦版適中長度) --- */
+.search-bar { 
+    position: fixed; top: 0; width: 100%; background: rgba(0,0,0,0.9); 
+    padding: 10px 15px; display: flex; gap: 10px; z-index: 100; box-sizing: border-box;
+    justify-content: center;
+}
+.search-input-group { 
+    display: flex; gap: 8px; width: 100%; max-width: 480px; 
+}
+.search-bar input { 
+    flex: 1; background: #111; border: 1px solid #333; color: #00f2ff; 
+    border-radius: 20px; padding: 8px 15px; outline: none; transition: 0.3s;
+}
+.search-bar input:focus { border-color: #00f2ff; box-shadow: 0 0 10px rgba(0,242,255,0.3); }
+
+/* --- 3D 核心 --- */
 .container { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 320px; perspective: 1500px; }
 .carousel { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .card { position: absolute; width: 220px; height: 320px; transform-style: preserve-3d; }
@@ -45,11 +29,12 @@ html, body {
 .card-inner.is-flipped { transform: rotateY(180deg); }
 .front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; border: 1px solid rgba(0, 242, 255, 0.3); background: #111; overflow: hidden; }
 .front img { width: 100%; height: 78%; object-fit: cover; }
-.info-tag { display: flex; height: 22%; background: #000; align-items: center; font-size: 13px; }
-.info-name { flex: 1.5; text-align: center; }
+.info-tag { display: flex; height: 22%; background: #000; align-items: center; font-size: 13px; border-top: 1px solid rgba(0, 242, 255, 0.2); }
+.info-name { flex: 1.5; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 5px; }
 .info-price { flex: 1; color: #00f2ff; font-weight: bold; text-align: center; }
-.back { transform: rotateY(180deg); padding: 20px; background: #050505; }
-.btn-edit { position: absolute; top: 10px; right: 10px; background: none; border: 1px solid #333; border-radius: 50%; width: 32px; height: 32px; color: #888; display: flex; align-items: center; justify-content: center; }
+.back { transform: rotateY(180deg); padding: 20px; background: #050505; box-sizing: border-box; }
+
+/* --- 編輯面板美化 --- */
 .admin-panel {
     position: fixed; bottom: -100%; width: 100%; background: #0a0a0a;
     padding: 20px 25px 40px; border-top: 2px solid #00f2ff; z-index: 400;
@@ -58,7 +43,8 @@ html, body {
 }
 .admin-panel.active { bottom: 0; }
 .panel-title { color: #00f2ff; margin-bottom: 20px; text-align: center; text-shadow: 0 0 10px rgba(0,242,255,0.5); }
-.close-handle { width: 50px; height: 5px; background: #333; margin: -10px auto 15px; border-radius: 10px; }
+.close-handle { width: 50px; height: 5px; background: #333; margin: -10px auto 15px; border-radius: 10px; cursor: pointer; }
+
 .input-label { display: block; font-size: 12px; color: #888; margin: 10px 0 5px 5px; }
 .neon-input {
     width: 100%; padding: 12px 15px; margin-bottom: 12px;
@@ -66,9 +52,26 @@ html, body {
     border-radius: 12px; box-sizing: border-box; outline: none; transition: 0.3s;
 }
 .neon-input:focus { border-color: #00f2ff; box-shadow: 0 0 10px rgba(0,242,255,0.2); }
-.upload-area { width: 100%; min-height: 80px; border: 1.5px dashed #333; border-radius: 12px; background: #080808; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box; cursor: pointer; }
+.neon-textarea { resize: none; line-height: 1.5; }
+
+.upload-area { 
+    width: 100%; min-height: 80px; border: 1.5px dashed #333; border-radius: 12px; 
+    background: #080808; display: flex; flex-direction: column; align-items: center; 
+    justify-content: center; padding: 10px; box-sizing: border-box; cursor: pointer; text-align: center;
+}
 .img-preview { width: 100%; max-height: 150px; object-fit: contain; border-radius: 8px; border: 1px solid #00f2ff; }
-.save-action-btn { width: 100%; background: #00f2ff; color: #000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 16px; margin-top: 20px; }
-.cancel-action-btn { width: 100%; background: transparent; color: #666; border: none; margin-top: 10px; }
-.fab-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: #000; border: 1px solid #00f2ff; color: #00f2ff; border-radius: 50%; font-size: 30px; z-index: 150; }
+
+/* --- 按鈕系統 --- */
+.save-action-btn { width: 100%; background: #00f2ff; color: #000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 16px; margin-top: 10px; cursor: pointer; }
+.delete-action-btn { width: 100%; background: transparent; color: #ff2d55; border: 1px solid #ff2d55; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 14px; margin-top: 10px; cursor: pointer; }
+.cancel-action-btn { width: 100%; background: transparent; color: #666; border: none; margin-top: 10px; cursor: pointer; }
+.fab-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: #000; border: 1px solid #00f2ff; color: #00f2ff; border-radius: 50%; font-size: 30px; z-index: 150; box-shadow: 0 0 15px rgba(0,242,255,0.4); cursor: pointer; }
+.neon-btn { background: #000; color: #00f2ff; border: 1px solid #00f2ff; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .admin-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 250; display: none; backdrop-filter: blur(4px); }
+
+/* --- LINE 引導 --- */
+#line-guide { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 9999; backdrop-filter: blur(10px); }
+.guide-arrow { position: absolute; right: 20px; font-size: 50px; color: #00f2ff; text-shadow: 0 0 15px #00f2ff; }
+.guide-arrow.top { top: 10px; transform: rotate(180deg); animation: bounce 1s infinite; }
+.guide-arrow.bottom { bottom: 15px; animation: bounce 1s infinite; }
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
