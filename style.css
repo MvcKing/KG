@@ -1,44 +1,55 @@
-/* 全局鎖定，防止手機版橡皮筋回彈與橫向溢出 */
+/* 1. 視窗鎖定：徹底消滅滾動條 */
 html, body {
     margin: 0;
     padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden; /* 徹底禁止全頁面捲動 */
-    background: #0f0f0f;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden; /* 禁止所有方向捲動 */
+    position: fixed;  /* 鎖死位置，防止橡皮筋回彈 */
+    background: #0a0a0a;
     color: white;
     font-family: "Microsoft JhengHei", sans-serif;
-    /* 防止手機長按彈出選單 */
+    /* 避免長按彈出選單 */
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
 }
 
-/* 頂部搜尋列 */
+/* 2. 搜尋列 */
 .search-bar {
     position: fixed;
     top: 0;
-    width: 100%;
-    background: rgba(30, 30, 30, 0.95);
+    left: 0;
+    width: 100vw;
+    background: rgba(25, 25, 25, 0.95);
     padding: 15px;
     display: flex;
     justify-content: center;
     gap: 10px;
     z-index: 100;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    box-shadow: 0 2px 15px rgba(0,0,0,0.6);
 }
 
 .search-bar input {
     padding: 10px 15px;
     border-radius: 20px;
     border: 1px solid #444;
-    background: #222;
+    background: #111;
     color: white;
-    width: 60%;
+    width: 65%;
     max-width: 300px;
 }
 
-/* 3D 核心容器 */
+.search-bar button {
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: none;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+/* 3. 3D 核心容器 */
 .container {
     position: absolute;
     top: 45%;
@@ -47,7 +58,7 @@ html, body {
     width: 200px;
     height: 280px;
     perspective: 1500px;
-    /* 關鍵：攔截所有瀏覽器預設手勢，交由 JS 處理 */
+    /* 物理攔截：告訴手機瀏覽器不要處理任何手勢 */
     touch-action: none; 
 }
 
@@ -66,7 +77,7 @@ html, body {
     transform-style: preserve-3d;
 }
 
-/* 搜尋命中特效 */
+/* 搜尋命中效果 */
 .card.highlight .card-inner {
     box-shadow: 0 0 30px #00d4ff;
     border: 2px solid #00d4ff;
@@ -79,7 +90,6 @@ html, body {
     height: 100%;
     transform-style: preserve-3d;
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: pointer;
 }
 
 .card-inner.is-flipped {
@@ -106,7 +116,7 @@ html, body {
 .front .title-tag {
     position: absolute;
     bottom: 0;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.8);
     width: 100%;
     padding: 8px;
     text-align: center;
@@ -115,28 +125,29 @@ html, body {
 
 .back {
     transform: rotateY(180deg);
-    padding: 15px;
-    background: linear-gradient(135deg, #222, #000);
+    padding: 20px;
+    background: #111;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    white-space: pre-wrap; /* 支援換行 */
+    white-space: pre-wrap;
     word-break: break-all;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
-/* 管理面板 - 放在最下方 */
+/* 4. 管理面板 */
 .admin-panel {
     position: fixed;
     bottom: 0;
-    width: 100%;
-    background: #1e1e1e;
+    left: 0;
+    width: 100vw;
+    background: #181818;
     padding: 15px;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    max-height: 35vh;
+    border-top: 1px solid #333;
+    max-height: 30vh;
     overflow-y: auto;
     z-index: 90;
+    box-sizing: border-box;
 }
 
 .form-group {
@@ -148,18 +159,18 @@ html, body {
 }
 
 .form-group input, .form-group textarea {
-    padding: 8px;
-    background: #333;
+    padding: 10px;
+    background: #252525;
     border: 1px solid #444;
     color: white;
-    border-radius: 5px;
+    border-radius: 8px;
 }
 
 #addBtn {
-    background: #007bff;
+    background: #28a745;
     color: white;
     border: none;
-    padding: 10px;
-    border-radius: 5px;
+    padding: 12px;
+    border-radius: 8px;
     font-weight: bold;
 }
