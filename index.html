@@ -8,49 +8,37 @@
 </head>
 <body>
 
-    <!-- LINE 專用雙向引導遮罩 -->
     <div id="line-guide">
         <div class="guide-arrow top">▼</div>
         <div class="guide-content">
             <h2 style="color: #ff2d55; margin-bottom: 10px;">偵測到 LINE 瀏覽器</h2>
             <p style="margin-bottom: 20px;">語音搜尋功能受限</p>
-            <div class="guide-step">
-                <span>1</span> 點擊功能選單圖示<br>(右上角或右下角)
-            </div>
-            <div class="guide-step">
-                <span>2</span> 選擇 <strong>「在瀏覽器中開啟」</strong>
-            </div>
+            <div class="guide-step"><span>1</span> 點擊功能選單圖示</div>
+            <div class="guide-step"><span>2</span> 選擇 <strong>「在瀏覽器中開啟」</strong></div>
             <div class="neon-line"></div>
-            <p style="font-size: 14px; color: #888;">切換後即可使用麥克風搜尋</p>
         </div>
         <div class="guide-arrow bottom">▼</div>
     </div>
 
-    <!-- 遮罩層 (點擊側邊欄外會關閉) -->
     <div class="admin-overlay" id="overlay" onclick="closeAllPanels()"></div>
 
-    <!-- 側邊導航欄 (預設隱藏) -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header"><h3 class="sidebar-title">快速連結</h3></div>
         <div class="sidebar-content">
             <a href="https://mvcking.github.io/Live-Streaming-Schedule/LiveStreamingSchedule.html" class="nav-item">
-                <img src="https://www.google.com/s2/favicons?sz=64&domain=mvcking.github.io" class="nav-icon" alt="icon">
+                <img src="https://www.google.com/s2/favicons?sz=64&domain=mvcking.github.io" class="nav-icon">
                 <span>直播排班系統</span>
             </a>
         </div>
     </div>
 
-    <!-- 頂部搜尋列 -->
     <div class="search-bar">
         <button class="menu-btn neon-btn" onclick="toggleSidebar(true)">&#9776;</button>
         <div class="search-input-group">
             <input type="text" id="searchInput" placeholder="搜尋產品...">
             <button id="voiceBtn" class="voice-btn neon-btn" onclick="startVoiceSearch()">
-                <!-- 修正後的麥克風圖案 -->
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-                    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-                </svg>
+                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
             </button>
             <button class="search-submit neon-btn" onclick="searchCard()">GO</button>
         </div>
@@ -60,30 +48,38 @@
         <div class="carousel" id="carousel"></div>
     </div>
 
-    <!-- 新增按鈕 -->
     <button class="fab-btn" onclick="openAddMode()">+</button>
 
-    <!-- 編輯面板 -->
     <div class="admin-panel" id="adminPanel">
         <div class="close-handle" onclick="toggleAdmin(false)"></div>
-        <h3 id="panelTitle" style="color:#00f2ff; margin-bottom:15px; text-align: center;">產品編輯</h3>
+        <h3 id="panelTitle" class="panel-title">產品編輯</h3>
         <input type="hidden" id="editIndex" value="-1">
+        
         <div class="form-group">
-            <input type="text" id="cardName" placeholder="產品名稱">
-            <input type="number" id="cardPrice" placeholder="銷售價格">
+            <label class="input-label">基本資訊</label>
+            <input type="text" id="cardName" class="neon-input" placeholder="產品名稱">
+            <input type="number" id="cardPrice" class="neon-input" placeholder="銷售價格">
             
-            <div class="upload-container" onclick="document.getElementById('cardImgFile').click()">
-                <span id="uploadStatus">📷 點擊上傳圖片 (相簿/檔案)</span>
+            <label class="input-label">圖片上傳 (相簿/拍照)</label>
+            <div class="upload-area" onclick="document.getElementById('cardImgFile').click()">
+                <div id="uploadPlaceholder">
+                    <span class="upload-icon">📸</span>
+                    <p id="uploadStatus">點擊開啟檔案或相機</p>
+                </div>
                 <input type="file" id="cardImgFile" accept="image/*" style="display:none" onchange="previewImage(this)">
-                <div id="previewWrapper" style="display:none; margin-top:10px;">
-                    <img id="imgPreview" style="width:100%; height:120px; object-fit:contain; border-radius:10px; border: 1px solid #00f2ff;">
+                <div id="previewWrapper" class="preview-wrapper">
+                    <img id="imgPreview" class="img-preview">
                 </div>
             </div>
             <input type="hidden" id="cardImgBase64"> 
 
-            <textarea id="cardBack" placeholder="產品資訊..." rows="3"></textarea>
-            <button id="saveBtn" class="neon-btn" style="width: 100%; height: 45px; border-radius: 10px;" onclick="saveCard()">儲存資訊</button>
-            <button onclick="toggleAdmin(false)" style="width:100%; margin-top:10px; background:none; border:none; color:#666;">取消</button>
+            <label class="input-label">詳細說明</label>
+            <textarea id="cardBack" class="neon-input neon-textarea" placeholder="產品介紹..." rows="3"></textarea>
+            
+            <div class="button-group">
+                <button id="saveBtn" class="save-action-btn" onclick="saveCard()">確認儲存</button>
+                <button class="cancel-action-btn" onclick="toggleAdmin(false)">取消返回</button>
+            </div>
         </div>
     </div>
 
