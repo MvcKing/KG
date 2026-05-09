@@ -1,4 +1,4 @@
-/* --- 基礎背景與字體 --- */
+/* --- 基礎背景 --- */
 html, body {
     margin: 0; padding: 0; width: 100vw; height: 100vh;
     overflow: hidden; position: fixed;
@@ -6,80 +6,72 @@ html, body {
     color: white; font-family: "Microsoft JhengHei", sans-serif;
 }
 
-/* --- 統一霓虹按鈕樣式 --- */
+/* --- 霓虹按鈕通用樣式 --- */
 .neon-btn {
-    background: #000;
-    color: #00f2ff;
-    border: 1px solid #00f2ff;
-    border-radius: 20px;
-    padding: 6px 15px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 5px rgba(0, 242, 255, 0.3);
-    text-shadow: 0 0 5px rgba(0, 242, 255, 0.5);
-    outline: none;
+    background: #000; color: #00f2ff; border: 1px solid #00f2ff;
+    border-radius: 20px; font-weight: bold; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s ease; box-shadow: 0 0 5px rgba(0, 242, 255, 0.3);
+    text-shadow: 0 0 5px rgba(0, 242, 255, 0.5); outline: none;
     -webkit-tap-highlight-color: transparent;
 }
+.neon-btn:active { transform: scale(0.9); box-shadow: 0 0 15px rgba(0, 242, 255, 0.8); }
 
-.neon-btn:active {
-    transform: scale(0.9);
-    box-shadow: 0 0 15px rgba(0, 242, 255, 0.8);
-}
-
-/* 錄音中狀態樣式 */
+/* 語音偵測中的動態效果 */
 .voice-btn.recording {
-    color: #ff2d55 !important;
-    border-color: #ff2d55 !important;
+    color: #ff2d55 !important; border-color: #ff2d55 !important;
     box-shadow: 0 0 20px rgba(255, 45, 85, 0.8) !important;
     animation: neon-pulse-red 1.2s infinite !important;
 }
+@keyframes neon-pulse-red { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); opacity: 0.7; } }
 
-@keyframes neon-pulse-red {
-    0% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.7; transform: scale(1.1); }
-    100% { opacity: 1; transform: scale(1); }
-}
-
-/* --- UI 元件布局 --- */
+/* --- 頂部搜尋列 --- */
 .search-bar {
     position: fixed; top: 0; left: 0; width: 100vw;
-    background: rgba(0, 0, 0, 0.95); padding: 12px 20px;
-    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(0, 0, 0, 0.95); padding: 12px 15px;
+    display: flex; align-items: center; gap: 10px;
     z-index: 100; border-bottom: 1px solid rgba(0, 242, 255, 0.2); box-sizing: border-box;
 }
-
-.search-input-group { display: flex; flex: 1; justify-content: flex-end; gap: 8px; align-items: center; }
-.search-bar input { 
-    width: 60%; max-width: 180px; padding: 8px 15px; border-radius: 20px; 
-    border: 1px solid #333; background: #000; color: #00f2ff; outline: none; 
-}
-
-.menu-btn, .voice-btn { width: 45px; height: 35px; padding: 0; }
+.search-input-group { display: flex; flex: 1; gap: 8px; align-items: center; }
+.search-bar input { flex: 1; min-width: 0; padding: 8px 15px; border-radius: 20px; border: 1px solid #333; background: #000; color: #00f2ff; outline: none; }
+.menu-btn, .voice-btn { width: 40px; height: 35px; flex-shrink: 0; }
+.search-submit { padding: 6px 12px; flex-shrink: 0; }
 .voice-btn svg { width: 18px; height: 18px; fill: currentColor; }
 
+/* --- 側邊欄 --- */
 .sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100vh; background: rgba(10, 10, 10, 0.98); border-right: 1px solid rgba(0, 242, 255, 0.3); transition: 0.4s; z-index: 300; padding: 20px; box-sizing: border-box; }
 .sidebar.open { left: 0; box-shadow: 10px 0 30px rgba(0, 242, 255, 0.3); }
+.nav-item { display: flex; align-items: center; gap: 12px; padding: 15px; color: #eee; text-decoration: none; border-bottom: 1px solid #222; }
+.nav-icon { width: 24px; height: 24px; border-radius: 4px; }
 
-.container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 320px; perspective: 2000px; }
+/* --- 3D 卡片核心 --- */
+.container { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 320px; perspective: 2000px; }
 .carousel { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
-
-.card-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.6s; border-radius: 15px; cursor: pointer; }
+.card { position: absolute; width: 100%; height: 100%; transform-style: preserve-3d; }
+.card-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.6s; border-radius: 15px; }
 .card-inner.is-flipped { transform: rotateY(180deg); }
 
 .front, .back { 
     position: absolute; width: 100%; height: 100%; backface-visibility: hidden; 
-    border-radius: 15px; background: #111; border: 1px solid rgba(0, 242, 255, 0.4); 
-    box-shadow: 0 0 10px rgba(0, 242, 255, 0.2); overflow: hidden; 
+    border-radius: 15px; background: #111; border: 1px solid rgba(0, 242, 255, 0.4); overflow: hidden; 
 }
 
-.back { transform: rotateY(180deg); padding: 15px; box-sizing: border-box; background: #0a0a0a; display: flex; flex-direction: column; }
-.btn-edit { align-self: flex-end; background: none; border: 1px solid #333; color: #888; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+/* 卡片正面 */
+.front img { width: 100%; height: 75%; object-fit: cover; }
+.info-tag { display: flex; height: 25%; background: #000; border-top: 1px solid #222; }
+.info-name { flex: 1.5; display: flex; align-items: center; justify-content: center; font-size: 13px; padding: 5px; border-right: 1px solid #222; text-align: center; line-height: 1.2; }
+.info-price { flex: 1; display: flex; align-items: center; justify-content: center; color: #00f2ff; font-weight: bold; }
 
+/* 卡片背面 */
+.back { 
+    transform: rotateY(180deg); padding: 20px; box-sizing: border-box; 
+    background: #0a0a0a; display: flex; flex-direction: column; gap: 5px;
+}
+.btn-edit { position: absolute; top: 12px; right: 12px; background: none; border: 1px solid #333; color: #888; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; }
+
+/* --- 編輯面板 & 遮罩 --- */
 .admin-panel { position: fixed; bottom: -100%; left: 0; width: 100vw; background: #0d0d0d; padding: 30px 25px; border-top: 2px solid #00f2ff; z-index: 400; transition: 0.5s; box-sizing: border-box; border-radius: 25px 25px 0 0; }
 .admin-panel.active { bottom: 0; }
-.fab-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: #000; border-radius: 50%; border: 1px solid #00f2ff; color: #00f2ff; font-size: 30px; z-index: 150; cursor: pointer; }
+.form-group input, .form-group textarea { width: 100%; padding: 12px; margin-bottom: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; }
+.fab-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: #000; border-radius: 50%; border: 1px solid #00f2ff; color: #00f2ff; font-size: 30px; z-index: 150; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0, 242, 255, 0.4); }
 .admin-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 250; display: none; backdrop-filter: blur(4px); }
