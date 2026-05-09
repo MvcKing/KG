@@ -18,7 +18,6 @@
         </div>
         <div class="sidebar-content">
             <a href="https://mvcking.github.io/Live-Streaming-Schedule/LiveStreamingSchedule.html" class="nav-item">
-                <!-- 自動抓取 Favicon -->
                 <img src="https://www.google.com/s2/favicons?sz=64&domain=mvcking.github.io" class="nav-icon" alt="icon">
                 <span>直播排班系統</span>
             </a>
@@ -27,18 +26,18 @@
 
     <!-- 頂部搜尋列 -->
     <div class="search-bar">
-        <button class="menu-btn" onclick="toggleSidebar(true)">&#9776;</button>
+        <button class="menu-btn neon-btn" onclick="toggleSidebar(true)">&#9776;</button>
         <div class="search-input-group">
             <input type="text" id="searchInput" placeholder="搜尋產品...">
             <!-- 語音搜尋按鈕 -->
-            <button id="voiceBtn" class="voice-btn" onclick="startVoiceSearch()">
+            <button id="voiceBtn" class="voice-btn neon-btn" onclick="startVoiceSearch()">
                 <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
             </button>
-            <button class="search-submit" onclick="searchCard()">GO</button>
+            <button class="search-submit neon-btn" onclick="searchCard()">GO</button>
         </div>
     </div>
 
-    <!-- 3D 核心展示區 -->
+    <!-- 3D 展示區 -->
     <div class="container">
         <div class="carousel" id="carousel"></div>
     </div>
@@ -46,7 +45,7 @@
     <!-- 浮動新增按鈕 -->
     <button class="fab-btn" onclick="openAddMode()">+</button>
 
-    <!-- 編輯面板 (新增/更新通用) -->
+    <!-- 編輯面板 -->
     <div class="admin-panel" id="adminPanel">
         <div class="close-handle"></div>
         <h3 id="panelTitle" style="color:#00f2ff; margin-bottom:15px; text-align: center;">產品編輯</h3>
@@ -56,8 +55,8 @@
             <input type="number" id="cardPrice" placeholder="銷售價格">
             <input type="text" id="cardImg" placeholder="圖片 URL (可留空)">
             <textarea id="cardBack" placeholder="產品資訊 (支援換行)..." rows="3"></textarea>
-            <button id="saveBtn" onclick="saveCard()">儲存資訊</button>
-            <button onclick="toggleAdmin(false)" style="width:100%; margin-top:10px; background:none; border:none; color:#666;">取消</button>
+            <button id="saveBtn" class="neon-btn" style="width: 100%; height: 45px;" onclick="saveCard()">儲存資訊</button>
+            <button onclick="toggleAdmin(false)" style="width:100%; margin-top:10px; background:none; border:none; color:#666; cursor:pointer;">取消</button>
         </div>
     </div>
 
