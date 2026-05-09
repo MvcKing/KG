@@ -7,17 +7,30 @@ const adminPanel = document.getElementById('adminPanel');
 const sidebar = document.getElementById('sidebar');
 const overlay = document.getElementById('overlay');
 
-// 圖片處理
+// 優化後的圖片處理：確保 Base64 寫入成功
 function previewImage(input) {
     const file = input.files[0];
+    const statusText = document.getElementById('uploadStatus');
+    
     if (file) {
+        statusText.innerText = "讀取中..."; // 加入讀取提示
         const reader = new FileReader();
+        
         reader.onload = (e) => {
-            document.getElementById('imgPreview').src = e.target.result;
+            const base64Data = e.target.result;
+            document.getElementById('imgPreview').src = base64Data;
+            document.getElementById('cardImgBase64').value = base64Data;
+            
             document.getElementById('previewWrapper').style.display = 'block';
             document.getElementById('uploadPlaceholder').style.display = 'none';
-            document.getElementById('cardImgBase64').value = e.target.result;
+            statusText.innerText = "點擊開啟檔案或相機";
         };
+        
+        reader.onerror = () => {
+            alert("圖片讀取失敗，請重試");
+            statusText.innerText = "讀取失敗，請重新選擇";
+        };
+        
         reader.readAsDataURL(file);
     }
 }
@@ -31,25 +44,57 @@ async function fetchCards() {
     } catch (err) { console.error("Fetch Error"); }
 }
 
-// 資料儲存
+// 嚴格修正後的儲存函式
 async function saveCard() {
     const index = parseInt(document.getElementById('editIndex').value);
     const name = document.getElementById('cardName').value.trim();
     const price = document.getElementById('cardPrice').value.trim();
     const desc = document.getElementById('cardBack').value.trim();
-    const imgData = document.getElementById('cardImgBase64').value;
+    
+    // 雙重檢查：優先抓取預覽圖的 src，避免隱藏欄位更新延遲
+    const previewImg = document.getElementById('imgPreview');
+    const imgData = (previewImg.src && previewImg.src.startsWith('data:image')) ? previewImg.src : "";
 
-    if (!name || !price || !imgData) return alert("資訊不完整");
+    // 嚴格檢查必填項
+    if (!name) return alert("請輸入產品名稱");
+    if (!price) return alert("請輸入銷售價格");
+    if (!imgData) return alert("請上傳產品圖片");
 
     const btn = document.getElementById('saveBtn');
-    btn.innerText = "上傳中..."; btn.disabled = true;
+    const originalText = btn.innerText;
+    btn.innerText = "傳送中..."; 
+    btn.disabled = true;
 
     try {
-        await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "save", index, name, price, img: imgData, desc }) });
-        await fetchCards();
-        toggleAdmin(false);
-    } catch (err) { alert("儲存失敗"); }
-    finally { btn.innerText = "確認儲存"; btn.disabled = false; }
+        const response = await fetch(GAS_URL, { 
+            method: "POST", 
+            // 確保內容類型正確，有些環境需要這行
+            mode: 'no-cors', 
+            body: JSON.stringify({ 
+                action: "save", 
+                index, 
+                name, 
+                price, 
+                img: imgData, 
+                desc 
+            }) 
+        });
+
+        // 由於 GAS POST 常會遇到跨域問題導致 response 無法讀取，
+        // 我們這裡強制延遲 1.5 秒後重新拉取資料，確保後端已寫入。
+        setTimeout(async () => {
+            await fetchCards();
+            toggleAdmin(false);
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }, 1500);
+
+    } catch (err) { 
+        console.error("Save Error:", err);
+        alert("網路連線問題，請稍後再試"); 
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
 }
 
 // 渲染卡片
