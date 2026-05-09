@@ -1,4 +1,3 @@
-// 已更新為您的新 GAS 連結
 const GAS_URL = "https://script.google.com/macros/s/AKfycbxGWU6PQskSbaPTj0jNbmCwlmRlUYbzOwtO7eqVfsXKJrWlGkG-fA_Tqz6TRlBDmkUI/exec";
 
 let cardData = [];

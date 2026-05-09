@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>3D Neon Mall - Pro Max</title>
+    <!-- 修改網頁標題與 LINE 顯示文字 -->
+    <title>Kyogoku 產品資訊網</title>
+    <meta property="og:title" content="Kyogoku 產品資訊網">
+    <meta property="og:description" content="探索 Kyogoku 精選產品，提供 3D 互動旋轉展示">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <!-- LINE 專用雙向引導遮罩 -->
     <div id="line-guide">
         <div class="guide-arrow top">▼</div>
         <div class="guide-content">
@@ -32,6 +36,7 @@
         </div>
     </div>
 
+    <!-- 搜尋列 -->
     <div class="search-bar">
         <button class="menu-btn neon-btn" onclick="toggleSidebar(true)">&#9776;</button>
         <div class="search-input-group">
@@ -50,6 +55,7 @@
 
     <button class="fab-btn" onclick="openAddMode()">+</button>
 
+    <!-- 編輯與新增面板 -->
     <div class="admin-panel" id="adminPanel">
         <div class="close-handle" onclick="toggleAdmin(false)"></div>
         <h3 id="panelTitle" class="panel-title">產品編輯</h3>
@@ -60,11 +66,12 @@
             <input type="text" id="cardName" class="neon-input" placeholder="產品名稱">
             <input type="number" id="cardPrice" class="neon-input" placeholder="銷售價格">
             
-            <label class="input-label">圖片上傳 (相簿/拍照)</label>
+            <label class="input-label">圖片上傳 (支援行動裝置相機)</label>
             <div class="upload-area" onclick="document.getElementById('cardImgFile').click()">
                 <div id="uploadPlaceholder">
                     <span class="upload-icon">📸</span>
                     <p id="uploadStatus">點擊開啟檔案或相機</p>
+                    <p style="font-size: 11px; color: #666; margin-top: 4px;">(使用手機可直接拍照上傳)</p>
                 </div>
                 <input type="file" id="cardImgFile" accept="image/*" style="display:none" onchange="previewImage(this)">
                 <div id="previewWrapper" class="preview-wrapper">
