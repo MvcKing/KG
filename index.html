@@ -8,7 +8,6 @@
 </head>
 <body>
 
-    <!-- 全域 LINE 環境導引 -->
     <div id="line-guide" class="line-guide">
         <div class="guide-content">
             <div class="guide-header">⚠️ 偵測到 LINE 瀏覽器環境</div>
@@ -21,29 +20,25 @@
 
     <div class="overlay" id="overlay" onclick="closeAllPanels()"></div>
 
-    <!-- 頂部搜尋與導航 -->
     <header class="header">
-        <button class="icon-btn" onclick="toggleSidebar(true)">&#9776;</button>
+        <button class="icon-btn neon-border" onclick="toggleSidebar(true)">&#9776;</button>
         <div class="search-group">
-            <div class="search-input-wrapper">
+            <div class="search-input-wrapper neon-border">
                 <input type="text" id="searchInput" placeholder="搜尋產品...">
-                <button class="inner-mic-btn" onclick="startSpeechRecognition('searchInput')">🎤</button>
+                <button id="searchMicBtn" class="inner-mic-btn" onclick="startSpeechRecognition('searchInput', 'searchMicBtn')">🎤</button>
             </div>
-            <button class="search-btn" onclick="searchCard()">GO</button>
+            <button class="search-btn neon-border" onclick="searchCard()">GO</button>
         </div>
     </header>
 
-    <!-- 3D 轉盤場景 -->
     <main class="scene" id="scene">
         <div class="carousel" id="carousel"></div>
     </main>
 
-    <!-- 懸浮新增按鈕 -->
-    <button class="fab" onclick="openAddMode()">+</button>
+    <button class="fab neon-border" onclick="openAddMode()">+</button>
 
-    <!-- 側邊選單 -->
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">系統選單</div>
+        <div class="sidebar-header">系統導航</div>
         <div class="sidebar-content">
             <a href="https://mvcking.github.io/Live-Streaming-Schedule/LiveStreamingSchedule.html" class="nav-link" target="_blank">
                 <img src="https://www.google.com/s2/favicons?sz=64&domain=mvcking.github.io" class="nav-icon">
@@ -52,7 +47,6 @@
         </div>
     </div>
 
-    <!-- 編輯/新增產品面板 -->
     <div class="panel" id="adminPanel">
         <div class="panel-handle" onclick="toggleAdmin(false)"></div>
         <h3 id="panelTitle">產品資訊</h3>
@@ -60,11 +54,11 @@
         
         <div class="form-body">
             <div class="input-flex">
-                <input type="text" id="cardName" placeholder="產品名稱">
-                <input type="number" id="cardPrice" placeholder="價格" style="width: 85px;">
+                <input type="text" id="cardName" placeholder="產品名稱" class="neon-input">
+                <input type="number" id="cardPrice" placeholder="價格" style="width: 85px;" class="neon-input">
             </div>
             
-            <div class="upload-box" onclick="document.getElementById('cardImgFile').click()">
+            <div class="upload-box neon-border" onclick="document.getElementById('cardImgFile').click()">
                 <div id="uploadPlaceholder">
                     <span class="cam">📸</span>
                     <p id="uploadStatus">拍照或上傳 (自動壓縮)</p>
@@ -76,14 +70,14 @@
             </div>
             <input type="hidden" id="cardImgBase64"> 
 
-            <div class="textarea-container">
+            <div class="textarea-container neon-border">
                 <textarea id="cardBack" placeholder="產品規格與介紹..." rows="4"></textarea>
-                <button class="mic-btn-floating" onclick="startSpeechRecognition('cardBack')">🎤</button>
+                <button id="panelMicBtn" class="mic-btn-floating" onclick="startSpeechRecognition('cardBack', 'panelMicBtn')">🎤</button>
             </div>
             
             <div class="panel-btns">
-                <button id="saveBtn" class="btn-save" onclick="saveCard()">確認儲存</button>
-                <button id="deleteBtn" class="btn-del" style="display:none;" onclick="deleteCard()">刪除此產品</button>
+                <button id="saveBtn" class="btn-save neon-border" onclick="saveCard()">確認儲存</button>
+                <button id="deleteBtn" class="btn-del" style="display:none;" onclick="deleteCard()">刪除產品</button>
             </div>
         </div>
     </div>
