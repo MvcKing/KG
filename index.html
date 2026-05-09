@@ -3,33 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D 互動旋轉翻面卡片</title>
+    <title>3D 產品管理系統</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="instruction">左右拖拽旋轉輪播，點擊卡片進行翻面</div>
+    <!-- 頂部搜尋列 -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="搜尋髮妝品名稱 (例如：洗髮精)...">
+        <button onclick="searchCard()">搜尋定位</button>
+    </div>
 
+    <!-- 3D 輪播主區域 -->
     <div class="container">
         <div class="carousel" id="carousel">
-            <div class="card" style="--i:1;">
-                <div class="card-inner">
-                    <div class="front"><img src="https://picsum.photos/300/400?random=1" alt=""><span>正面資訊 1</span></div>
-                    <div class="back"><h3>背面詳情 1</h3><p>這是背面的內容介紹。</p></div>
-                </div>
-            </div>
-            <div class="card" style="--i:2;">
-                <div class="card-inner">
-                    <div class="front"><img src="https://picsum.photos/300/400?random=2" alt=""><span>正面資訊 2</span></div>
-                    <div class="back"><h3>背面詳情 2</h3><p>這是背面的內容介紹。</p></div>
-                </div>
-            </div>
-            <div class="card" style="--i:8;">
-                <div class="card-inner">
-                    <div class="front"><img src="https://picsum.photos/300/400?random=8" alt=""><span>正面資訊 8</span></div>
-                    <div class="back"><h3>背面詳情 8</h3><p>這是背面的內容介紹。</p></div>
-                </div>
-            </div>
+            <!-- 由 JavaScript 動態產生 -->
+        </div>
+    </div>
+
+    <!-- 下方新增卡片區域 -->
+    <div class="admin-panel">
+        <h3>新增髮妝品卡片</h3>
+        <div class="form-group">
+            <input type="text" id="cardName" placeholder="卡片名稱 (如：深層洗髮精)">
+            <input type="text" id="cardImg" placeholder="圖片連結 (URL)">
+            <textarea id="cardBack" placeholder="背面資訊 (自動換行整理)"></textarea>
+            <button id="addBtn">新增至輪播圖</button>
         </div>
     </div>
 
