@@ -1,7 +1,10 @@
-// 1. 初始資料 (預設兩筆產品)
+// 預設 5 張美髮產品卡片
 let cardData = [
-    { name: "極致洗髮精", price: "880", img: "https://picsum.photos/300/400?random=11", desc: "【深層淨化】\n適合各種髮質使用。" },
-    { name: "炫光護髮膜", price: "1280", img: "https://picsum.photos/300/400?random=22", desc: "【瞬間光澤】\n鎖住水分與色澤。" }
+    { name: "黑鑽逆時洗髮精", price: "980", img: "https://picsum.photos/300/400?random=1", desc: "【極致修護】\n蘊含珍稀黑鑽精萃，\n深層修復受損髮質，\n重現亮澤。" },
+    { name: "藍寶石持色露", price: "850", img: "https://picsum.photos/300/400?random=2", desc: "【專為染後設計】\n中和枯黃色調，\n維持髮色鮮艷度，\n長效保濕。" },
+    { name: "鈦金結構護髮膜", price: "1500", img: "https://picsum.photos/300/400?random=3", desc: "【結構重建】\n強韌髮芯纖維，\n預防斷裂，\n讓秀髮更有彈性。" },
+    { name: "極光豐盈噴霧", price: "720", img: "https://picsum.photos/300/400?random=4", desc: "【無重力蓬鬆】\n提升髮根撐力，\n質地清爽不黏膩，\n適合細軟髮。" },
+    { name: "金萃魔油", price: "1280", img: "https://picsum.photos/300/400?random=5", desc: "【高效撫平】\n瞬間解決毛躁，\n抗高溫保護，\n散發頂級芳香。" }
 ];
 
 const carousel = document.getElementById('carousel');
@@ -9,7 +12,7 @@ const sidebar = document.getElementById('sidebar');
 const adminPanel = document.getElementById('adminPanel');
 const overlay = document.getElementById('overlay');
 
-// 2. UI 開關邏輯
+// UI 控制
 function toggleSidebar(isOpen) {
     sidebar.classList.toggle('open', isOpen);
     overlay.style.display = isOpen ? 'block' : 'none';
@@ -20,35 +23,54 @@ function toggleAdmin(isOpen) {
     overlay.style.display = isOpen ? 'block' : 'none';
 }
 
-// 點擊背景遮罩關閉所有開啟的面板
-overlay.onclick = () => {
-    toggleSidebar(false);
-    toggleAdmin(false);
-};
+overlay.onclick = () => { toggleSidebar(false); toggleAdmin(false); };
 
-// 3. 渲染卡片核心
+// 開啟「新增」模式 (清空暫存編號)
+function openAddMode() {
+    document.getElementById('panelTitle').innerText = "新增產品資訊";
+    document.getElementById('editIndex').value = "-1";
+    document.getElementById('cardName').value = "";
+    document.getElementById('cardPrice').value = "";
+    document.getElementById('cardImg').value = "";
+    document.getElementById('cardBack').value = "";
+    toggleAdmin(true);
+}
+
+// 開啟「編輯」模式 (帶入舊資料)
+function openEditMode(index) {
+    const item = cardData[index];
+    document.getElementById('panelTitle').innerText = "編輯產品資訊";
+    document.getElementById('editIndex').value = index;
+    document.getElementById('cardName').value = item.name;
+    document.getElementById('cardPrice').value = item.price;
+    document.getElementById('cardImg').value = item.img;
+    document.getElementById('cardBack').value = item.desc;
+    toggleAdmin(true);
+}
+
+// 渲染卡片
 function renderCards() {
     carousel.innerHTML = "";
     const total = cardData.length;
     const angleStep = 360 / total;
-    const radius = Math.max(300, total * 50); // 根據卡片數量動態調整旋轉半徑
+    const radius = Math.max(300, total * 40);
 
     cardData.forEach((item, i) => {
         const cardHtml = `
             <div class="card" id="card-${i}" style="transform: rotateY(${i * angleStep}deg) translateZ(${radius}px)">
                 <div class="card-inner" onclick="handleCardClick(event, this)">
                     <div class="front">
-                        <img src="${item.img}" alt="product">
+                        <img src="${item.img}" alt="p">
                         <div class="info-tag">
                             <div class="info-name">${item.name}</div>
                             <div class="info-price">$${item.price}</div>
                         </div>
                     </div>
                     <div class="back">
-                        <strong style="color:#00f2ff; font-size:18px;">${item.name}</strong>
-                        <div style="font-size:18px; color:#00f2ff; margin-bottom:10px;">$${item.price}</div>
-                        <hr style="border:0; border-top:1px solid #333; margin:10px 0;">
-                        <p style="font-size:14px; color:#ccc; line-height:1.6; white-space:pre-wrap;">${item.desc}</p>
+                        <button class="btn-edit" onclick="event.stopPropagation(); openEditMode(${i})">編輯</button>
+                        <strong style="color:#00f2ff; font-size:16px;">${item.name}</strong>
+                        <div style="font-size:16px; color:#00f2ff; margin-bottom:10px;">$${item.price}</div>
+                        <p style="font-size:13px; color:#ccc; line-height:1.5; white-space:pre-wrap; margin:0;">${item.desc}</p>
                     </div>
                 </div>
             </div>`;
@@ -56,17 +78,39 @@ function renderCards() {
     });
 }
 
-// 4. 旋轉互動處理
-let isDragging = false, startX = 0, currentRotation = 0, tempRotation = 0, lastMoveDistance = 0;
+// 儲存邏輯 (判斷是新增還是更新)
+function saveCard() {
+    const index = parseInt(document.getElementById('editIndex').value);
+    const name = document.getElementById('cardName').value.trim();
+    const price = document.getElementById('cardPrice').value.trim();
+    const desc = document.getElementById('cardBack').value.trim();
+    const imgUrl = document.getElementById('cardImg').value.trim();
+    const img = imgUrl || `https://picsum.photos/300/400?random=${Math.random()}`;
 
+    if (!name || !price || !desc) return alert("請完整填寫產品資訊");
+
+    const newData = { name, price, img, desc };
+
+    if (index === -1) {
+        // 新增模式
+        cardData.push(newData);
+    } else {
+        // 更新模式
+        cardData[index] = newData;
+    }
+
+    renderCards();
+    toggleAdmin(false);
+}
+
+// 旋轉邏輯
+let isDragging = false, startX = 0, currentRotation = 0, tempRotation = 0, lastMoveDistance = 0;
 function handleStart(e) {
-    if (sidebar.classList.contains('open') || adminPanel.classList.contains('active')) return;
-    isDragging = true;
-    lastMoveDistance = 0;
+    if (adminPanel.classList.contains('active')) return;
+    isDragging = true; lastMoveDistance = 0;
     startX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
     carousel.style.transition = 'none';
 }
-
 function handleMove(e) {
     if (!isDragging) return;
     if (e.cancelable) e.preventDefault();
@@ -76,20 +120,16 @@ function handleMove(e) {
     tempRotation = currentRotation + moveX * 0.3;
     carousel.style.transform = `rotateY(${tempRotation}deg)`;
 }
-
 function handleEnd() {
     if (!isDragging) return;
-    isDragging = false;
-    currentRotation = tempRotation;
+    isDragging = false; currentRotation = tempRotation;
     carousel.style.transition = 'transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)';
 }
-
 function handleCardClick(e, element) {
-    if (lastMoveDistance > 10) return; // 滑動超過 10 像素視為旋轉，不翻面
+    if (lastMoveDistance > 10) return;
     element.classList.toggle('is-flipped');
 }
 
-// 5. 功能按鈕：搜尋與新增
 window.searchCard = function() {
     const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
     const index = cardData.findIndex(item => item.name.toLowerCase().includes(keyword));
@@ -99,27 +139,6 @@ window.searchCard = function() {
     }
 };
 
-document.getElementById('addBtn').onclick = () => {
-    const name = document.getElementById('cardName').value.trim();
-    const price = document.getElementById('cardPrice').value.trim();
-    const desc = document.getElementById('cardBack').value.trim();
-    const imgInput = document.getElementById('cardImg').value.trim();
-    const img = imgInput || `https://picsum.photos/300/400?random=${Math.random()}`;
-
-    if (!name || !price || !desc) return alert("請完整輸入產品名稱、價格與描述");
-
-    cardData.push({ name, price, img, desc });
-    renderCards();
-    toggleAdmin(false);
-    
-    // 清空輸入欄位
-    document.getElementById('cardName').value = "";
-    document.getElementById('cardPrice').value = "";
-    document.getElementById('cardBack').value = "";
-    document.getElementById('cardImg').value = "";
-};
-
-// 6. 全域事件掛載
 window.addEventListener('touchstart', handleStart, { passive: false });
 window.addEventListener('touchmove', handleMove, { passive: false });
 window.addEventListener('touchend', handleEnd, { passive: false });
@@ -127,5 +146,4 @@ window.addEventListener('mousedown', handleStart);
 window.addEventListener('mousemove', handleMove);
 window.addEventListener('mouseup', handleEnd);
 
-// 初始化渲染
 renderCards();
