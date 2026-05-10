@@ -4,23 +4,20 @@ let cardData = [];
 let isDragging = false, startX = 0, currentRotation = 0, tempRotation = 0, lastMoveDistance = 0;
 
 window.onload = () => {
-    // 嚴謹判斷：必須是手機版且是 LINE 瀏覽器才顯示導引
-    const ua = navigator.userAgent;
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
-    const isLine = /Line/i.test(ua);
-    
+    // 嚴謹判斷：電腦版不顯示，僅在手機版 LINE 顯示
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const isLine = /Line/i.test(navigator.userAgent);
     if (isMobile && isLine) {
         document.getElementById('line-guide').style.display = 'flex';
     }
-    
     fetchCards();
     setupRotation();
 };
 
-// --- 語音辨識核心 ---
+// --- 語音辨識 ---
 function startSpeechRecognition(targetId, btnId, clearFirst) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return alert("您的裝置不支援語音辨識功能");
+    if (!SpeechRecognition) return alert("您的裝置不支援語音辨識");
 
     const recognition = new SpeechRecognition();
     recognition.lang = 'zh-TW';
@@ -29,7 +26,7 @@ function startSpeechRecognition(targetId, btnId, clearFirst) {
 
     recognition.onstart = () => {
         btn.classList.add('mic-active');
-        if (clearFirst) input.value = ""; // 搜尋列邏輯：開始錄音即清空
+        if (clearFirst) input.value = "";
     };
 
     recognition.onresult = (e) => {
@@ -38,12 +35,11 @@ function startSpeechRecognition(targetId, btnId, clearFirst) {
             input.value = result;
             searchCard(); 
         } else {
-            input.value += result; // 面板邏輯：追加文字
+            input.value += result;
         }
     };
 
-    recognition.onend = () => { btn.classList.remove('mic-active'); };
-    recognition.onerror = () => { btn.classList.remove('mic-active'); };
+    recognition.onend = () => btn.classList.remove('mic-active');
     recognition.start();
 }
 
@@ -73,7 +69,7 @@ function handleImageUpload(input) {
     }
 }
 
-// --- 3D 旋轉操控 ---
+// --- 3D 旋轉 ---
 function setupRotation() {
     const stage = document.getElementById('mainStage');
     const carousel = document.getElementById('carousel3d');
@@ -189,11 +185,10 @@ function openAddMode() {
 
 async function saveCard() {
     const name = document.getElementById('cardName').value, img = document.getElementById('cardImgBase64').value;
-    if (!name || !img) return alert("請填寫產品名稱並拍照上傳！");
-    document.getElementById('saveBtn').innerText = "正在儲存...";
+    if (!name || !img) return alert("請填寫名稱並上傳圖片！");
+    document.getElementById('saveBtn').innerText = "儲存中...";
     await fetch(GAS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify({
-        action: "save",
-        index: parseInt(document.getElementById('editIndex').value),
+        action: "save", index: parseInt(document.getElementById('editIndex').value),
         name, price: document.getElementById('cardPrice').value, img, desc: document.getElementById('cardBack').value
     })});
     location.reload();
