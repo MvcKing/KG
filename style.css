@@ -10,7 +10,30 @@ body { margin: 0; background: #000; color: #fff; width: 100vw; height: 100vh; ov
 
 .neon-ui { border: 1px solid var(--neon) !important; box-shadow: var(--neon-glow); transition: 0.3s; }
 
-/* 頂部置中優化 */
+/* LINE 導引專屬按鈕：獨立設計，不影響其他部分 */
+.guide-action-btn {
+    margin-top: 20px;
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #00f2ff, #0077ff);
+    color: #000;
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 242, 255, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.guide-action-btn:active { transform: scale(0.95); box-shadow: 0 2px 8px rgba(0, 242, 255, 0.6); }
+
+/* 搜尋麥克風點擊反應 */
+.mic-icon-btn.active-red {
+    color: var(--danger) !important;
+    text-shadow: 0 0 10px var(--danger);
+    transform: translateY(-50%) scale(1.2);
+}
+
+/* 頂部導航 */
 .top-nav { position: fixed; top: 0; width: 100%; height: 75px; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; padding: 0 15px; z-index: 500; }
 .nav-center-wrapper { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 600px; gap: 12px; }
 
@@ -21,23 +44,22 @@ body { margin: 0; background: #000; color: #fff; width: 100vw; height: 100vh; ov
 .search-container { flex: 1; display: flex; gap: 8px; align-items: center; }
 .search-bar-wrap { flex: 1; position: relative; background: #111; border-radius: 25px; display: flex; }
 .search-bar-wrap input { width: 100%; background: transparent; border: none; color: #fff; padding: 10px 45px 10px 18px; outline: none; }
-.mic-icon-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--neon); font-size: 20px; cursor: pointer; }
+.mic-icon-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--neon); font-size: 20px; cursor: pointer; transition: 0.3s; }
 .go-action-btn { background: #000; color: var(--neon); border-radius: 20px; height: 40px; padding: 0 20px; font-weight: bold; cursor: pointer; flex-shrink: 0; }
 
-/* 3D 轉盤結構 */
+/* 3D 場景 */
 .main-stage { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 320px; perspective: 1200px; cursor: grab; }
 .carousel-3d { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.7s; }
 .card-item { position: absolute; width: 220px; height: 320px; }
 .card-wrapper { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: 0.6s; border-radius: 15px; }
 .card-wrapper.is-flipped { transform: rotateY(180deg); }
 
-/* 卡片設計與編輯按鈕修正 */
 .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; background: #111; border: 1px solid var(--neon); box-shadow: var(--neon-glow); display: flex; flex-direction: column; overflow: hidden; }
 .card-front img { width: 100%; height: 75%; object-fit: cover; border-bottom: 1px solid #222; }
 .card-info-tag { height: 25%; width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; background: #0a0a0a; }
 .tag-price { color: var(--neon); font-weight: bold; }
 
-/* 卡片背面與編輯圖標右上角定位 */
+/* 編輯圖標 */
 .card-back { transform: rotateY(180deg); padding: 50px 15px 15px; position: relative; }
 .edit-trigger { 
     position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; 
@@ -47,34 +69,33 @@ body { margin: 0; background: #000; color: #fff; width: 100vw; height: 100vh; ov
 }
 .edit-trigger:hover { transform: scale(1.1); background: var(--neon); color: #000; }
 
-/* 側邊欄跑版修正 */
-.side-menu { position: fixed; top: 0; left: 0; width: 280px; height: 100%; background: var(--dark-surface); z-index: 1000; transform: translateX(-100%); transition: 0.4s cubic-bezier(0.1, 0.8, 0.1, 1); border-right: 1px solid var(--neon); }
+/* 側邊欄 */
+.side-menu { position: fixed; top: 0; left: 0; width: 280px; height: 100%; background: var(--dark-surface); z-index: 1000; transform: translateX(-100%); transition: 0.4s; border-right: 1px solid var(--neon); }
 .side-menu.open { transform: translateX(0); }
 .side-menu-header { padding: 40px 20px; font-size: 20px; font-weight: bold; color: var(--neon); border-bottom: 1px solid #222; }
-.menu-label { padding: 25px 20px 10px; color: #666; font-size: 12px; letter-spacing: 1px; }
-.menu-item { display: flex; align-items: center; padding: 15px 20px; text-decoration: none; border-bottom: 1px solid #1a1a1a; transition: 0.3s; }
+.menu-label { padding: 25px 20px 10px; color: #666; font-size: 12px; }
+.menu-item { display: flex; align-items: center; padding: 15px 20px; text-decoration: none; border-bottom: 1px solid #1a1a1a; }
 .menu-item-icon { width: 30px; font-size: 20px; margin-right: 15px; display: flex; justify-content: center; }
-.menu-item-text { display: flex; flex-direction: column; }
 .menu-item-text .title { margin: 0; font-size: 15px; color: #eee; }
 .menu-item-text .desc { margin: 0; font-size: 11px; color: #555; }
 
-/* 編輯面板尺寸修正 (新增與編輯統一大小) */
+/* 面板尺寸 */
 .admin-panel { 
     position: fixed; bottom: -100%; left: 50%; transform: translateX(-50%); 
     width: 92%; max-width: 450px; height: auto; max-height: 85vh;
     background: #050505; border: 2px solid var(--neon); border-radius: 20px 20px 0 0; 
-    padding: 25px 20px; z-index: 2000; transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    padding: 25px 20px; z-index: 2000; transition: bottom 0.5s; 
     overflow-y: auto; box-shadow: 0 -10px 30px rgba(0, 242, 255, 0.3);
 }
 .admin-panel.active { bottom: 0; }
 .panel-drag-handle { width: 40px; height: 4px; background: #333; border-radius: 2px; margin: -10px auto 15px; }
 
-.admin-input, .desc-area-wrap textarea { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 10px; outline: none; margin-bottom: 12px; }
-.image-upload-area { border: 1px dashed #444; padding: 20px; text-align: center; border-radius: 10px; margin-bottom: 15px; cursor: pointer; }
+.admin-input, .desc-area-wrap textarea { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 10px; outline: none; margin-bottom: 12px; resize: none; }
+.image-upload-area { border: 1px dashed #444; padding: 20px; text-align: center; border-radius: 10px; margin-bottom: 15px; }
 .image-upload-area img { max-width: 100%; max-height: 180px; border-radius: 5px; }
 
-.save-confirm-btn { width: 100%; background: var(--neon); color: #000; font-weight: bold; padding: 16px; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; }
-.delete-warn-btn { width: 100%; background: transparent; color: var(--danger); border: 1px solid var(--danger); margin-top: 15px; padding: 10px; border-radius: 10px; cursor: pointer; }
+.save-confirm-btn { width: 100%; background: var(--neon); color: #000; font-weight: bold; padding: 16px; border: none; border-radius: 12px; cursor: pointer; }
+.delete-warn-btn { width: 100%; background: transparent; color: var(--danger); border: 1px solid var(--danger); margin-top: 15px; padding: 10px; border-radius: 10px; }
 
 .floating-add-btn { position: fixed; bottom: 30px; right: 25px; width: 60px; height: 60px; border-radius: 50%; background: #000; color: var(--neon); font-size: 32px; z-index: 400; cursor: pointer; }
 .global-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 600; backdrop-filter: blur(4px); }

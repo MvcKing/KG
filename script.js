@@ -13,7 +13,7 @@ window.onload = () => {
     setupRotation();
 };
 
-// --- 語音辨識雙邏輯：搜尋(清空) / 面板(追加) ---
+// --- 語音辨識：修復變色邏輯與清除功能 ---
 function startSpeechRecognition(targetId, btnId, clearFirst) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) return alert("您的裝置不支援語音辨識");
@@ -24,25 +24,30 @@ function startSpeechRecognition(targetId, btnId, clearFirst) {
     const input = document.getElementById(targetId);
 
     recognition.onstart = () => {
-        btn.classList.add('mic-active');
-        if (clearFirst) input.value = ""; // 搜尋列點擊即清空
+        // 加入紅色激活狀態類名
+        btn.classList.add('active-red');
+        if (clearFirst) input.value = ""; 
     };
 
     recognition.onresult = (e) => {
         const result = e.results[0][0].transcript;
-        if (clearFirst) {
-            input.value = result;
-            searchCard(); 
-        } else {
-            input.value += result; // 面板描述則採追加方式
-        }
+        input.value = result;
+        if (clearFirst) searchCard(); 
     };
 
-    recognition.onend = () => btn.classList.remove('mic-active');
+    recognition.onend = () => {
+        // 移除紅色狀態，恢復原色
+        btn.classList.remove('active-red');
+    };
+    
+    recognition.onerror = () => {
+        btn.classList.remove('active-red');
+    };
+
     recognition.start();
 }
 
-// --- 圖片壓縮與處理 ---
+// --- 圖片處理 ---
 function handleImageUpload(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -68,7 +73,7 @@ function handleImageUpload(input) {
     }
 }
 
-// --- 3D 旋轉與互動 ---
+// --- 3D 旋轉 ---
 function setupRotation() {
     const stage = document.getElementById('mainStage');
     const carousel = document.getElementById('carousel3d');
@@ -103,7 +108,6 @@ function setupRotation() {
     window.addEventListener('touchend', end);
 }
 
-// --- 資料通訊與渲染 ---
 async function fetchCards() {
     try {
         const res = await fetch(GAS_URL);
@@ -143,7 +147,6 @@ function renderCards() {
     });
 }
 
-// --- 控制項邏輯 ---
 function toggleAdmin(isOpen) {
     document.getElementById('adminPanel').classList.toggle('active', isOpen);
     document.getElementById('globalOverlay').style.display = isOpen ? 'block' : 'none';

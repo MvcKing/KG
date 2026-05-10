@@ -8,19 +8,18 @@
 </head>
 <body>
 
-    <!-- LINE 環境導引 (僅手機 LINE 顯示) -->
+    <!-- LINE 環境導引：使用專屬新按鈕類名 -->
     <div id="line-guide" class="line-guide-container">
         <div class="line-guide-box">
             <div class="guide-title">⚠️ 請使用外部瀏覽器</div>
-            <p>為確保語音與上傳功能正常：</p>
+            <p>為確保功能正常運作：</p>
             <p>請點選 <span class="accent">「...」</span> 並選擇 <span class="accent">「以預設瀏覽器開啟」</span></p>
-            <button class="guide-close-btn" onclick="document.getElementById('line-guide').style.display='none'">我知道了</button>
+            <button class="guide-action-btn" onclick="document.getElementById('line-guide').style.display='none'">我知道了</button>
         </div>
     </div>
 
     <div class="global-overlay" id="globalOverlay" onclick="closeAllPanels()"></div>
 
-    <!-- 頂部導航列：電腦版置中優化 -->
     <header class="top-nav">
         <div class="nav-center-wrapper">
             <button class="menu-toggle-btn neon-ui" onclick="toggleSidebar(true)">
@@ -32,6 +31,7 @@
             <div class="search-container">
                 <div class="search-bar-wrap neon-ui">
                     <input type="text" id="searchInput" placeholder="搜尋產品...">
+                    <!-- 搜尋麥克風保留：具備點擊變色功能 -->
                     <button id="searchMicBtn" class="mic-icon-btn" onclick="startSpeechRecognition('searchInput', 'searchMicBtn', true)">🎤</button>
                 </div>
                 <button class="go-action-btn neon-ui" onclick="searchCard()">GO</button>
@@ -39,15 +39,12 @@
         </div>
     </header>
 
-    <!-- 3D 旋轉場景 -->
     <main class="main-stage" id="mainStage">
         <div class="carousel-3d" id="carousel3d"></div>
     </main>
 
-    <!-- 浮動新增按鈕 -->
     <button class="floating-add-btn neon-ui" onclick="openAddMode()">+</button>
 
-    <!-- 側邊導航欄：視覺優化版 -->
     <nav class="side-menu" id="sideMenu">
         <div class="side-menu-header">KYOGOKU MENU</div>
         <div class="side-menu-body">
@@ -63,7 +60,7 @@
         <div class="side-menu-footer">System v2.0</div>
     </nav>
 
-    <!-- 產品管理面板：優化彈出範圍與大小 -->
+    <!-- 管理面板：已移除內部的麥克風按鈕 -->
     <div class="admin-panel" id="adminPanel">
         <div class="panel-drag-handle" onclick="toggleAdmin(false)"></div>
         <h3 id="panelTitle">產品資訊</h3>
@@ -80,7 +77,6 @@
                     <span class="cam-icon">📸</span>
                     <p>點擊拍照或從圖庫選擇</p>
                 </div>
-                <!-- 已移除 capture 屬性以支援圖庫選擇 -->
                 <input type="file" id="cardImgFile" accept="image/*" style="display:none" onchange="handleImageUpload(this)">
                 <div id="previewWrapper" style="display:none;">
                     <img id="imgPreview">
@@ -89,8 +85,8 @@
             <input type="hidden" id="cardImgBase64"> 
 
             <div class="desc-area-wrap neon-ui">
-                <textarea id="cardBack" placeholder="輸入產品規格與描述..." rows="4"></textarea>
-                <button id="panelMicBtn" class="floating-mic-btn" onclick="startSpeechRecognition('cardBack', 'panelMicBtn', false)">🎤</button>
+                <!-- 此處已移除麥克風按鈕 -->
+                <textarea id="cardBack" placeholder="輸入產品規格與描述..." rows="5"></textarea>
             </div>
             
             <div class="action-buttons">
