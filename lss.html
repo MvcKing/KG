@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KYOGOKU Shopee-直播排班管理系統</title>
-    <link rel="icon" href="https://github.com/MvcKing/KG/blob/5941373008c97995ac8bcb97ad008a0b5786d219/Butterfly%20icon.png?raw=true" type="image/png">
+    <link rel="icon" href="https://github.com/MvcKing/KG/blob/7d86cfe1cb5b247af7d8fa8588a5167950980e2e/Butterfly%20icon.png?raw=true" type="image/png">
     <style>
         :root { 
-            --primary: #bb86fc;
-            --secondary: #03dac6;
-            --time-purple: #d69dff;
+            --primary: #bb86fc; 
+            --secondary: #03dac6; 
+            --time-purple: #d69dff; 
             --today-blue: #00d2ff;
             --bg: #0f111a; 
             --card-bg: rgba(30, 33, 45, 0.8);
@@ -31,43 +31,6 @@
             min-height: 100vh;
         }
 
-        /* 頂部導航欄 */
-        .top-nav {
-            display: flex;
-            justify-content: center;
-            padding: 15px 0;
-            margin-bottom: 10px;
-        }
-
-        .nav-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 25px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--primary);
-            border-radius: 50px;
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(187, 134, 252, 0.2);
-            backdrop-filter: blur(5px);
-        }
-
-        .nav-btn:hover {
-            background: var(--primary);
-            color: #0f111a;
-            box-shadow: 0 0 25px rgba(187, 134, 252, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .nav-btn img {
-            width: 20px;
-            height: 20px;
-            filter: drop-shadow(0 0 2px rgba(255,255,255,0.5));
-        }
-
         .calendar-container { 
             width: 100%; 
             overflow-x: auto; 
@@ -82,13 +45,14 @@
         .calendar-box { padding: 25px; min-width: 900px; } 
 
         .calendar-header { 
-            display: flex; 
-            justify-content: space-between; 
+            display: grid;
+            grid-template-columns: 1fr auto 1fr; /* 左、中、右 */
             align-items: center; 
             margin-bottom: 25px; 
             border-bottom: 1px solid var(--border); 
             padding-bottom: 15px; 
         }
+
         .calendar-header h3 { 
             font-size: 24px; 
             margin: 0; 
@@ -97,6 +61,32 @@
             -webkit-text-fill-color: transparent;
             font-weight: 900; 
             letter-spacing: 1px;
+            justify-self: start;
+        }
+
+        .nav-icon-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(187, 134, 252, 0.2);
+        }
+
+        .nav-icon-btn:hover {
+            background: var(--primary);
+            box-shadow: 0 0 25px rgba(187, 134, 252, 0.5);
+            transform: scale(1.1);
+        }
+
+        .nav-icon-btn img {
+            width: 28px;
+            height: 28px;
+            filter: drop-shadow(0 0 2px rgba(255,255,255,0.3));
         }
 
         #monthSelect {
@@ -106,6 +96,7 @@
             padding: 8px 15px;
             border-radius: 10px;
             outline: none;
+            justify-self: end;
         }
 
         .calendar-grid { 
@@ -159,12 +150,11 @@
 
         @keyframes rotateGlow { 100% { transform: rotate(1turn); } }
 
-        .day-num { font-size: 20px; font-weight: 800; color: rgba(255,255,255,0.2); margin-bottom: 8px; position: relative; z-index: 2; }
+        .day-num { font-size: 20px; font-weight: 800; color: rgba(255,255,255,0.15); margin-bottom: 8px; position: relative; z-index: 2; }
         .day-cell.has-data .day-num { color: var(--primary); }
 
         .day-info { font-size: 12px; line-height: 1.6; flex-grow: 1; position: relative; z-index: 2; }
         .info-txt { font-weight: 500; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; color: #b0b3b8; }
-        
         .info-time { color: var(--time-purple) !important; font-weight: bold; }
 
         .info-note-box { 
@@ -179,6 +169,7 @@
             z-index: 2;
         }
 
+        /* 編輯面板 */
         .edit-section { 
             background: var(--card-bg); 
             backdrop-filter: blur(15px);
@@ -193,11 +184,9 @@
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .edit-section h3 { margin-top: 0; color: var(--primary); font-size: 22px; margin-bottom: 25px; }
-        
         .input-row { display: flex; gap: 20px; flex-wrap: wrap; }
         .input-group { margin-bottom: 22px; flex: 1; min-width: 250px; }
-        
-        label { display: block; font-size: 13px; color: #999; margin-bottom: 8px; font-weight: 600; }
+        label { display: block; font-size: 13px; color: #999; margin-bottom: 8px; }
         input { 
             width: 100%; 
             padding: 14px; 
@@ -211,13 +200,8 @@
         input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(187, 134, 252, 0.3); }
 
         .btn-group { display: flex; gap: 15px; margin-top: 15px; }
-        .btn { 
-            flex: 1; border: none; padding: 16px; border-radius: 12px; 
-            font-weight: 700; font-size: 16px; cursor: pointer; 
-            transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; 
-        }
+        .btn { flex: 1; border: none; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-save { background: var(--accent-gradient); color: white; }
-        .btn-save:hover { filter: brightness(1.2); transform: translateY(-2px); }
         .btn-clear { background: #333; color: #bbb; border: 1px solid #444; }
 
         #loader { 
@@ -226,31 +210,27 @@
             display: none; justify-content: center; align-items: center; 
             z-index: 1000; flex-direction: column; 
         }
-        .spinner { 
-            border: 3px solid rgba(255,255,255,0.1); 
-            border-top: 3px solid var(--primary); 
-            border-radius: 50%; width: 40px; height: 40px; 
-            animation: spin 1s linear infinite; margin-bottom: 15px; 
-        }
+        .spinner { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<div class="top-nav">
-    <a href="https://mvcking.github.io/KG/index.html" target="_blank" class="nav-btn">
-        <img src="https://github.com/MvcKing/KG/blob/5941373008c97995ac8bcb97ad008a0b5786d219/CO2.png?raw=true" alt="KG Icon">
-    </a>
-</div>
-
-<div id="loader"><div class="spinner"></div><span style="letter-spacing: 2px; color: var(--primary);">SYNCING DATA...</span></div>
+<div id="loader"><div class="spinner"></div><br><span style="letter-spacing: 2px; color: var(--primary);">SYNCING DATA...</span></div>
 
 <div class="calendar-container">
     <div class="calendar-box">
         <div class="calendar-header">
+
             <h3 id="monthTitle">LOADING...</h3>
+            
+            <a href="https://mvcking.github.io/KG/index.html" target="_blank" class="nav-icon-btn" title="KG 產品資訊系統">
+                <img src="https://github.com/MvcKing/KG/blob/7d86cfe1cb5b247af7d8fa8588a5167950980e2e/CO2.png?raw=true" alt="KG Icon">
+            </a>
+
             <select id="monthSelect" onchange="loadMonthlyData()"></select>
         </div>
+
         <div class="calendar-grid" id="calendarGrid">
             <div class="weekday-label">SUN</div>
             <div class="weekday-label">MON</div>
