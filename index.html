@@ -11,9 +11,8 @@
     <div id="line-guide" class="line-guide">
         <div class="guide-content">
             <div class="guide-header">⚠️ 偵測到 LINE 瀏覽器環境</div>
-            <p>為確保「語音輸入」與「相機功能」正常運作：</p>
-            <p>1. 點擊螢幕 <span class="highlight">右上角</span> 或 <span class="highlight">右下角</span> 的 <span class="highlight">「...」</span></p>
-            <p>2. 選擇 <span class="highlight">「以預設瀏覽器開啟」</span> (Safari/Chrome)</p>
+            <p>1. 點擊螢幕 <span class="highlight">「...」</span></p>
+            <p>2. 選擇 <span class="highlight">「以預設瀏覽器開啟」</span></p>
             <button class="guide-btn" onclick="document.getElementById('line-guide').style.display='none'">我知道了</button>
         </div>
     </div>
@@ -21,11 +20,13 @@
     <div class="overlay" id="overlay" onclick="closeAllPanels()"></div>
 
     <header class="header">
-        <button class="icon-btn neon-border" onclick="toggleSidebar(true)">&#9776;</button>
+        <button class="icon-btn neon-border menu-trigger" onclick="toggleSidebar(true)">
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        </button>
         <div class="search-group">
             <div class="search-input-wrapper neon-border">
                 <input type="text" id="searchInput" placeholder="搜尋產品...">
-                <button id="searchMicBtn" class="inner-mic-btn" onclick="startSpeechRecognition('searchInput', 'searchMicBtn')">🎤</button>
+                <button id="searchMicBtn" class="inner-mic-btn" onclick="startSpeechRecognition('searchInput', 'searchMicBtn', true)">🎤</button>
             </div>
             <button class="search-btn neon-border" onclick="searchCard()">GO</button>
         </div>
@@ -38,13 +39,20 @@
     <button class="fab neon-border" onclick="openAddMode()">+</button>
 
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">系統導航</div>
+        <div class="sidebar-header">KYOGOKU 選單</div>
         <div class="sidebar-content">
+            <div class="sidebar-section-title">功能導航</div>
             <a href="https://mvcking.github.io/Live-Streaming-Schedule/LiveStreamingSchedule.html" class="nav-link" target="_blank">
-                <img src="https://www.google.com/s2/favicons?sz=64&domain=mvcking.github.io" class="nav-icon">
-                <span>直播排班系統</span>
+                <div class="nav-icon-box">
+                    <img src="https://www.google.com/s2/favicons?sz=64&domain=mvcking.github.io" class="nav-icon">
+                </div>
+                <div class="nav-text">
+                    <span class="main-text">直播排班系統</span>
+                    <span class="sub-text">Live Schedule</span>
+                </div>
             </a>
-        </div>
+            </div>
+        <div class="sidebar-footer">© 2024 Kyogoku System</div>
     </div>
 
     <div class="panel" id="adminPanel">
@@ -71,8 +79,8 @@
             <input type="hidden" id="cardImgBase64"> 
 
             <div class="textarea-container neon-border">
-                <textarea id="cardBack" placeholder="產品規格與介紹..." rows="4"></textarea>
-                <button id="panelMicBtn" class="mic-btn-floating" onclick="startSpeechRecognition('cardBack', 'panelMicBtn')">🎤</button>
+                <textarea id="cardBack" placeholder="產品規格與介紹..." rows="4" class="neon-input"></textarea>
+                <button id="panelMicBtn" class="mic-btn-floating" onclick="startSpeechRecognition('cardBack', 'panelMicBtn', false)">🎤</button>
             </div>
             
             <div class="panel-btns">

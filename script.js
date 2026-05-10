@@ -3,43 +3,51 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbxGWU6PQskSbaPTj0jNbmCw
 let cardData = [];
 let isDragging = false, startX = 0, currentRotation = 0, tempRotation = 0, lastMoveDistance = 0;
 
-// --- 1. 初始化與偵測 ---
+// --- 初始化 ---
 window.onload = () => {
     if (/Line/i.test(navigator.userAgent)) {
         document.getElementById('line-guide').style.display = 'flex';
     }
     fetchCards();
-    initRotation();
+    initInteraction();
 };
 
-// --- 2. 麥克風變色語音邏輯 ---
-function startSpeechRecognition(targetId, btnId) {
+// --- 語音辨識：優化清空內容功能 ---
+function startSpeechRecognition(targetId, btnId, clearContent) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return alert("瀏覽器不支援語音輸入");
+    if (!SpeechRecognition) return alert("您的瀏覽器不支援語音辨識");
 
     const recognition = new SpeechRecognition();
     recognition.lang = 'zh-TW';
     const btn = document.getElementById(btnId);
+    const targetInput = document.getElementById(targetId);
 
     recognition.onstart = () => {
-        btn.classList.add('mic-active'); // 圖標變紅並開始呼吸動畫
+        btn.classList.add('mic-active');
+        // 如果是搜尋列(clearContent為true)，則開始錄音時先清空文字
+        if (clearContent) targetInput.value = "";
     };
 
     recognition.onresult = (e) => {
         const text = e.results[0][0].transcript;
-        document.getElementById(targetId).value += text;
-        if (targetId === 'searchInput') searchCard();
+        // 搜尋列直接賦值，面板規格則累加
+        if (clearContent) {
+            targetInput.value = text;
+            searchCard(); // 自動觸位搜尋
+        } else {
+            targetInput.value += text;
+        }
     };
 
     recognition.onend = () => {
-        btn.classList.remove('mic-active'); // 錄音結束回復原色
+        btn.classList.remove('mic-active');
     };
 
     recognition.onerror = () => { btn.classList.remove('mic-active'); };
     recognition.start();
 }
 
-// --- 3. 圖片壓縮處理 ---
+// --- 圖片壓縮處理 ---
 function handleImageUpload(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -47,16 +55,15 @@ function handleImageUpload(input) {
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                let w = img.width, h = img.height;
-                const max = 800;
+                let w = img.width, h = img.height, max = 800;
                 if (w > h && w > max) { h *= max / w; w = max; }
                 else if (h > max) { w *= max / h; h = max; }
                 canvas.width = w; canvas.height = h;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, w, h);
-                const compressedData = canvas.toDataURL('image/jpeg', 0.7);
-                document.getElementById('imgPreview').src = compressedData;
-                document.getElementById('cardImgBase64').value = compressedData;
+                const compressed = canvas.toDataURL('image/jpeg', 0.7);
+                document.getElementById('imgPreview').src = compressed;
+                document.getElementById('cardImgBase64').value = compressed;
                 document.getElementById('previewWrapper').style.display = 'block';
                 document.getElementById('uploadPlaceholder').style.display = 'none';
             };
@@ -66,13 +73,13 @@ function handleImageUpload(input) {
     }
 }
 
-// --- 4. 旋轉核心 (電腦+手機) ---
-function initRotation() {
+// --- 旋轉邏輯 (電腦版支援) ---
+function initInteraction() {
     const scene = document.getElementById('scene');
     const carousel = document.getElementById('carousel');
 
     const start = (e) => {
-        if (e.target.closest('.panel') || e.target.closest('.header')) return;
+        if (e.target.closest('.panel') || e.target.closest('.header') || e.target.closest('.sidebar')) return;
         isDragging = true;
         startX = e.pageX || e.touches[0].pageX;
         carousel.style.transition = 'none';
@@ -101,31 +108,30 @@ function initRotation() {
     window.addEventListener('touchend', end);
 }
 
-// --- 5. 渲染與資料 ---
+// --- 資料渲染 ---
 async function fetchCards() {
     try {
         const res = await fetch(GAS_URL);
         cardData = await res.json();
         renderCards();
-    } catch (e) { console.error("資料獲取失敗"); }
+    } catch (e) { console.error("資料載入失敗"); }
 }
 
 function renderCards() {
     const carousel = document.getElementById('carousel');
     carousel.innerHTML = "";
     if (cardData.length === 0) return;
-
     const angle = 360 / cardData.length;
     const radius = Math.max(260, cardData.length * 40);
 
     cardData.forEach((item, i) => {
-        const cardHtml = `
+        const html = `
             <div class="card" style="transform: rotateY(${i * angle}deg) translateZ(${radius}px)">
                 <div class="card-inner" onclick="if(lastMoveDistance < 5) this.classList.toggle('is-flipped')">
                     <div class="front">
                         <img src="${item.img}" loading="lazy">
                         <div class="info-tag">
-                            <span class="info-name">${item.name}</span>
+                            <span style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;">${item.name}</span>
                             <span class="info-price">$${item.price}</span>
                         </div>
                     </div>
@@ -134,19 +140,24 @@ function renderCards() {
                             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                         </div>
                         <strong style="color:var(--primary); font-size:16px;">${item.name}</strong>
-                        <p style="margin-top:10px; overflow-y:auto; height:180px; font-size:13px; color:#ccc;">${item.desc || '尚無描述'}</p>
+                        <p style="margin-top:10px; overflow-y:auto; height:180px; font-size:13px; color:#ccc;">${item.desc || ''}</p>
                     </div>
                 </div>
             </div>`;
-        carousel.insertAdjacentHTML('beforeend', cardHtml);
+        carousel.insertAdjacentHTML('beforeend', html);
     });
 }
 
-// --- 6. UI 控制與儲存 ---
+// --- 面板與側邊欄控制 ---
 function toggleAdmin(isOpen) {
     document.getElementById('adminPanel').classList.toggle('active', isOpen);
     document.getElementById('overlay').style.display = isOpen ? 'block' : 'none';
 }
+function toggleSidebar(isOpen) {
+    document.getElementById('sidebar').classList.toggle('open', isOpen);
+    document.getElementById('overlay').style.display = isOpen ? 'block' : 'none';
+}
+function closeAllPanels() { toggleAdmin(false); toggleSidebar(false); }
 
 function openEditMode(i) {
     const d = cardData[i];
@@ -177,14 +188,9 @@ function openAddMode() {
 }
 
 async function saveCard() {
-    const name = document.getElementById('cardName').value;
-    const img = document.getElementById('cardImgBase64').value;
-    if (!name || !img) return alert("產品名稱與圖片為必填！");
-
-    const btn = document.getElementById('saveBtn');
-    btn.innerText = "同步數據中...";
-    btn.disabled = true;
-
+    const name = document.getElementById('cardName').value, img = document.getElementById('cardImgBase64').value;
+    if (!name || !img) return alert("名稱與圖片不可為空");
+    document.getElementById('saveBtn').innerText = "儲存中...";
     await fetch(GAS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify({
         action: "save",
         index: parseInt(document.getElementById('editIndex').value),
@@ -194,18 +200,12 @@ async function saveCard() {
 }
 
 async function deleteCard() {
-    if (!confirm("確定要移除此產品嗎？")) return;
+    if (!confirm("確定刪除?")) return;
     await fetch(GAS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify({
         action: "delete", index: parseInt(document.getElementById('editIndex').value)
     })});
     location.reload();
 }
-
-function toggleSidebar(isOpen) {
-    document.getElementById('sidebar').classList.toggle('open', isOpen);
-    document.getElementById('overlay').style.display = isOpen ? 'block' : 'none';
-}
-function closeAllPanels() { toggleAdmin(false); toggleSidebar(false); }
 
 function searchCard() {
     const key = document.getElementById('searchInput').value.trim().toLowerCase();

@@ -3,105 +3,73 @@
     --neon-glow: 0 0 12px rgba(0, 242, 255, 0.6);
     --danger: #ff3b30;
     --bg-dark: #000;
+    --sidebar-bg: #0a0a0a;
 }
 
 * { box-sizing: border-box; font-family: "Microsoft JhengHei", sans-serif; -webkit-tap-highlight-color: transparent; }
 body { margin: 0; background: var(--bg-dark); color: #fff; width: 100vw; height: 100vh; overflow: hidden; }
 
-/* 霓虹特效通用 */
-.neon-border {
-    border: 1px solid var(--primary) !important;
-    box-shadow: var(--neon-glow);
+/* 霓虹特效 */
+.neon-border { border: 1px solid var(--primary) !important; box-shadow: var(--neon-glow); }
+
+/* 頂部導航優化 */
+.header { position: fixed; top: 0; width: 100%; height: 75px; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; padding: 0 15px; z-index: 500; }
+.search-group { display: flex; align-items: center; gap: 10px; width: 100%; max-width: 400px; }
+.search-input-wrapper { position: relative; flex: 1; border-radius: 25px; background: #111; display: flex; align-items: center; }
+.search-input-wrapper input { width: 100%; background: transparent; border: none; color: #fff; padding: 12px 45px 12px 18px; outline: none; font-size: 14px; }
+
+/* 漢堡選單按鈕優化 */
+.menu-trigger {
+    flex-direction: column; gap: 4px; padding: 0; width: 42px; height: 42px;
+}
+.menu-trigger .bar {
+    width: 20px; height: 2px; background: var(--primary); border-radius: 2px; transition: 0.3s;
 }
 
-/* 頂部搜尋列 */
-.header {
-    position: fixed; top: 0; width: 100%; height: 75px;
-    background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
-    display: flex; align-items: center; justify-content: center; padding: 0 15px; z-index: 500;
-}
-.search-group { display: flex; align-items: center; gap: 8px; width: 100%; max-width: 380px; }
-.search-input-wrapper { position: relative; flex: 1; border-radius: 25px; background: #111; display: flex; }
-.search-input-wrapper input { width: 100%; background: transparent; border: none; color: #fff; padding: 10px 40px 10px 15px; outline: none; }
+/* 麥克風與 GO 按鈕 */
+.inner-mic-btn, .mic-btn-floating { background: transparent; border: none; color: var(--primary); font-size: 20px; cursor: pointer; transition: 0.3s; }
+.mic-btn-floating { position: absolute; bottom: 10px; right: 10px; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--primary); background: rgba(0,0,0,0.7); }
+.mic-active { color: var(--danger) !important; border-color: var(--danger) !important; text-shadow: 0 0 15px var(--danger); animation: mic-pulse 1s infinite; }
+@keyframes mic-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.1); } }
 
-/* 按鈕樣式 */
-.icon-btn, .search-btn { 
-    background: #000; color: var(--primary); width: 42px; height: 42px; border-radius: 50%; 
-    cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold;
-}
+.search-btn { background: #000; color: var(--primary); height: 42px; padding: 0 15px; border-radius: 20px; cursor: pointer; font-weight: bold; }
 
-/* 麥克風圖標設計與狀態切換 */
-.inner-mic-btn, .mic-btn-floating {
-    background: transparent; border: none; color: var(--primary); font-size: 20px; cursor: pointer; transition: 0.3s;
+/* 側邊欄視覺強化 */
+.sidebar {
+    position: fixed; top: 0; left: 0; width: 280px; height: 100%; background: var(--sidebar-bg); z-index: 1000; 
+    transform: translateX(-100%); transition: 0.4s cubic-bezier(0.1, 0.7, 0.1, 1); border-right: 1px solid var(--primary);
+    display: flex; flex-direction: column;
 }
-.mic-btn-floating {
-    position: absolute; bottom: 10px; right: 10px; width: 40px; height: 40px; 
-    border-radius: 50%; border: 1px solid var(--primary); background: rgba(0,0,0,0.6);
+.sidebar.open { transform: translateX(0); box-shadow: 10px 0 30px rgba(0, 242, 255, 0.2); }
+.sidebar-header { padding: 40px 20px 20px; font-size: 20px; font-weight: bold; color: var(--primary); letter-spacing: 2px; border-bottom: 1px solid #222; }
+.sidebar-section-title { padding: 25px 20px 10px; font-size: 12px; color: #666; text-transform: uppercase; }
+.nav-link {
+    display: flex; align-items: center; padding: 15px 20px; text-decoration: none; border-bottom: 1px solid #111; transition: 0.3s;
 }
-/* 錄音中紅色變色狀態 */
-.mic-active {
-    color: var(--danger) !important;
-    border-color: var(--danger) !important;
-    text-shadow: 0 0 15px var(--danger);
-    animation: mic-breathing 1.2s infinite;
-}
-@keyframes mic-breathing { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.1); } }
+.nav-link:hover { background: rgba(0, 242, 255, 0.05); }
+.nav-icon-box { width: 40px; height: 40px; background: #1a1a1a; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: 1px solid #333; margin-right: 15px; }
+.nav-icon { width: 24px; height: 24px; border-radius: 4px; }
+.nav-text { display: flex; flex-direction: column; }
+.main-text { color: #eee; font-size: 15px; }
+.sub-text { color: #666; font-size: 11px; }
+.sidebar-footer { margin-top: auto; padding: 20px; font-size: 10px; color: #333; text-align: center; }
 
-/* 3D 轉盤核心結構 */
-.scene { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 320px; perspective: 1200px; cursor: grab; }
+/* 3D 場景與卡片 */
+.scene { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 320px; perspective: 1200px; cursor: grab; }
 .carousel { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.7s; }
-.card { position: absolute; width: 220px; height: 320px; user-select: none; }
-.card-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: 0.6s; border-radius: 15px; }
-.card-inner.is-flipped { transform: rotateY(180deg); }
+.front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; background: #111; border: 1px solid var(--primary); box-shadow: var(--neon-glow); overflow: hidden; display: flex; flex-direction: column; }
+.front img { width: 100%; height: 75%; object-fit: cover; pointer-events: none; }
+.info-tag { height: 25%; width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; background: #0a0a0a; font-size: 13px; }
+.info-price { color: var(--primary); font-weight: bold; }
 
-/* 卡片正反面視覺修復 */
-.front, .back {
-    position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
-    border-radius: 15px; background: #111; border: 1px solid var(--primary); box-shadow: var(--neon-glow);
-    display: flex; flex-direction: column; overflow: hidden;
-}
-.front img { width: 100%; height: 75%; object-fit: cover; border-bottom: 1px solid #222; pointer-events: none; }
-.info-tag {
-    height: 25%; width: 100%; display: flex; align-items: center; justify-content: space-between;
-    padding: 0 12px; background: #0a0a0a;
-}
-.info-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold; font-size: 14px; color: #fff; }
-.info-price { color: var(--primary); font-weight: bold; margin-left: 8px; font-size: 14px; }
-
-/* 編輯霓虹按鈕 */
-.btn-edit-neon {
-    position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%;
-    background: rgba(0,0,0,0.7); border: 1px solid var(--primary); color: var(--primary);
-    display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: var(--neon-glow);
-}
-
-.back { transform: rotateY(180deg); padding: 55px 15px 15px; text-align: left; }
-
-/* 面板與 UI 元件 */
+/* 編輯面板優化 */
 .panel { position: fixed; bottom: -100%; left: 0; width: 100%; background: #050505; border-top: 2px solid var(--primary); border-radius: 20px 20px 0 0; padding: 25px 20px; z-index: 2000; transition: 0.5s; }
 .panel.active { bottom: 0; }
-.neon-input, .textarea-container textarea {
-    width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 12px;
-    border-radius: 10px; margin-bottom: 12px; outline: none; transition: 0.3s;
-}
-.neon-input:focus, .textarea-container textarea:focus { border-color: var(--primary); box-shadow: var(--neon-glow); }
-.textarea-container { position: relative; }
+.neon-input { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 10px; margin-bottom: 12px; outline: none; }
+.neon-input:focus { border-color: var(--primary); box-shadow: var(--neon-glow); }
 
-.btn-save { width: 100%; background: var(--primary); color: #000; font-weight: bold; padding: 16px; border: none; border-radius: 12px; font-size: 16px; cursor: pointer; }
-.btn-del { width: 100%; background: transparent; color: var(--danger); border: 1px solid var(--danger); margin-top: 12px; padding: 10px; border-radius: 10px; cursor: pointer; }
+.btn-save { width: 100%; background: var(--primary); color: #000; font-weight: bold; padding: 16px; border: none; border-radius: 12px; font-size: 16px; cursor: pointer; margin-top: 10px; }
+.btn-del { width: 100%; background: transparent; color: var(--danger); border: 1px solid var(--danger); margin-top: 15px; padding: 10px; border-radius: 10px; cursor: pointer; }
 
-/* 上傳框 */
-.upload-box { border: 1px dashed #444; padding: 20px; text-align: center; border-radius: 10px; margin-bottom: 15px; cursor: pointer; background: #080808; }
-.upload-box img { max-width: 100%; max-height: 150px; border-radius: 5px; }
-
-/* LINE 提示 */
-.line-guide { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; align-items: center; justify-content: center; text-align: center; }
-.guide-content { border: 2px solid var(--primary); padding: 35px 25px; border-radius: 20px; box-shadow: var(--neon-glow); margin: 20px; }
-.highlight { color: var(--primary); font-weight: bold; text-decoration: underline; }
-.guide-btn { margin-top: 25px; background: var(--primary); border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; width: 100%; }
-
-/* 其他 */
 .fab { position: fixed; bottom: 30px; right: 25px; width: 60px; height: 60px; border-radius: 50%; background: #000; color: var(--primary); font-size: 32px; z-index: 400; cursor: pointer; }
-.sidebar { position: fixed; top: 0; left: 0; width: 260px; height: 100%; background: #000; z-index: 1000; transform: translateX(-100%); transition: 0.3s; border-right: 1px solid #222; }
-.sidebar.open { transform: translateX(0); }
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 600; }
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; z-index: 600; backdrop-filter: blur(3px); }
