@@ -47,7 +47,6 @@ function startSpeechRecognition(targetId, btnId, clearFirst) {
     recognition.start();
 }
 
-// --- 圖片處理 ---
 function handleImageUpload(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -55,13 +54,18 @@ function handleImageUpload(input) {
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                let w = img.width, h = img.height, max = 800;
+                // 優化：將最大邊長縮減至 600px，確保 Base64 字串長度符合 GAS 穩定接收範圍
+                let w = img.width, h = img.height, max = 600; 
                 if (w > h && w > max) { h *= max / w; w = max; }
                 else if (h > max) { w *= max / h; h = max; }
+                
                 canvas.width = w; canvas.height = h;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, w, h);
-                const base64 = canvas.toDataURL('image/jpeg', 0.7);
+                
+                // 優化：調低品質至 0.6，體積會小非常多，但手機瀏覽視覺效果依然清晰
+                const base64 = canvas.toDataURL('image/jpeg', 0.6);
+                
                 document.getElementById('imgPreview').src = base64;
                 document.getElementById('cardImgBase64').value = base64;
                 document.getElementById('previewWrapper').style.display = 'block';
@@ -186,14 +190,50 @@ function openAddMode() {
 }
 
 async function saveCard() {
-    const name = document.getElementById('cardName').value, img = document.getElementById('cardImgBase64').value;
-    if (!name || !img) return alert("請填寫產品名稱並上傳圖片！");
-    document.getElementById('saveBtn').innerText = "儲存中...";
-    await fetch(GAS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify({
-        action: "save", index: parseInt(document.getElementById('editIndex').value),
-        name, price: document.getElementById('cardPrice').value, img, desc: document.getElementById('cardBack').value
-    })});
-    location.reload();
+    const name = document.getElementById('cardName').value.trim();
+    let img = document.getElementById('cardImgBase64').value;
+    const price = document.getElementById('cardPrice').value;
+    const desc = document.getElementById('cardBack').value;
+
+    // 現在只需確保有「產品名稱」即可建立，其餘皆為選填
+    if (!name) {
+        alert("請至少輸入「產品名稱」以便識別。");
+        return;
+    }
+
+    // 若未上傳圖片，給予一個預設的 Placeholder 圖片或空字串，防止系統潰散
+    if (!img) {
+        img = "https://via.placeholder.com/300x400?text=No+Image"; 
+    }
+
+    const saveBtn = document.getElementById('saveBtn');
+    saveBtn.innerText = "同步處理中...";
+    saveBtn.disabled = true; // 防止重複點擊
+
+    try {
+        await fetch(GAS_URL, { 
+            method: "POST", 
+            mode: 'no-cors', 
+            body: JSON.stringify({
+                action: "save", 
+                index: parseInt(document.getElementById('editIndex').value),
+                name: name, 
+                price: price || "0", // 若沒填價格預設為 0
+                img: img, 
+                desc: desc || ""      // 若沒填描述預設為空
+            })
+        });
+        
+        // 成功後延遲重新整理
+        setTimeout(() => {
+            location.reload();
+        }, 500);
+        
+    } catch (error) {
+        alert("上傳失敗，請檢查網路或縮小圖檔後再試一次。");
+        saveBtn.innerText = "確認儲存同步";
+        saveBtn.disabled = false;
+    }
 }
 
 async function deleteCard() {
