@@ -8,18 +8,19 @@
 </head>
 <body>
 
-    <!-- LINE 環境導引 (僅限手機 LINE) -->
+    <!-- LINE 環境導引 (僅手機 LINE 顯示) -->
     <div id="line-guide" class="line-guide-container">
         <div class="line-guide-box">
             <div class="guide-title">⚠️ 請使用外部瀏覽器</div>
-            <p>請點選 <span class="accent">「...」</span> 並選擇 <span class="accent">「以預設瀏覽器開啟」</span> 以確保上傳功能正常。</p>
+            <p>為確保語音與上傳功能正常：</p>
+            <p>請點選 <span class="accent">「...」</span> 並選擇 <span class="accent">「以預設瀏覽器開啟」</span></p>
             <button class="guide-close-btn" onclick="document.getElementById('line-guide').style.display='none'">我知道了</button>
         </div>
     </div>
 
     <div class="global-overlay" id="globalOverlay" onclick="closeAllPanels()"></div>
 
-    <!-- 頂部導航列：優化置中邏輯 -->
+    <!-- 頂部導航列：電腦版置中優化 -->
     <header class="top-nav">
         <div class="nav-center-wrapper">
             <button class="menu-toggle-btn neon-ui" onclick="toggleSidebar(true)">
@@ -46,11 +47,11 @@
     <!-- 浮動新增按鈕 -->
     <button class="floating-add-btn neon-ui" onclick="openAddMode()">+</button>
 
-    <!-- 側邊導航欄 -->
+    <!-- 側邊導航欄：視覺優化版 -->
     <nav class="side-menu" id="sideMenu">
-        <div class="side-menu-header">KYOGOKU</div>
+        <div class="side-menu-header">KYOGOKU MENU</div>
         <div class="side-menu-body">
-            <div class="menu-label">系統功能</div>
+            <div class="menu-label">系統功能導航</div>
             <a href="https://mvcking.github.io/Live-Streaming-Schedule/LiveStreamingSchedule.html" class="menu-item" target="_blank">
                 <div class="menu-item-icon">📅</div>
                 <div class="menu-item-text">
@@ -59,9 +60,10 @@
                 </div>
             </a>
         </div>
+        <div class="side-menu-footer">System v2.0</div>
     </nav>
 
-    <!-- 產品管理面板 -->
+    <!-- 產品管理面板：優化彈出範圍與大小 -->
     <div class="admin-panel" id="adminPanel">
         <div class="panel-drag-handle" onclick="toggleAdmin(false)"></div>
         <h3 id="panelTitle">產品資訊</h3>
@@ -73,13 +75,12 @@
                 <input type="number" id="cardPrice" placeholder="價格" class="admin-input neon-focus" style="width: 100px;">
             </div>
             
-            <!-- 優化後的上傳區：支援相機與圖庫 -->
             <div class="image-upload-area neon-ui" onclick="document.getElementById('cardImgFile').click()">
                 <div id="uploadPlaceholder">
                     <span class="cam-icon">📸</span>
                     <p>點擊拍照或從圖庫選擇</p>
                 </div>
-                <!-- 移除 capture 屬性以支援圖庫選擇 -->
+                <!-- 已移除 capture 屬性以支援圖庫選擇 -->
                 <input type="file" id="cardImgFile" accept="image/*" style="display:none" onchange="handleImageUpload(this)">
                 <div id="previewWrapper" style="display:none;">
                     <img id="imgPreview">

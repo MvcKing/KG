@@ -4,7 +4,6 @@ let cardData = [];
 let isDragging = false, startX = 0, currentRotation = 0, tempRotation = 0, lastMoveDistance = 0;
 
 window.onload = () => {
-    // 嚴謹判斷：電腦版不顯示，僅在手機版 LINE 顯示
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     const isLine = /Line/i.test(navigator.userAgent);
     if (isMobile && isLine) {
@@ -14,7 +13,7 @@ window.onload = () => {
     setupRotation();
 };
 
-// --- 語音辨識 ---
+// --- 語音辨識雙邏輯：搜尋(清空) / 面板(追加) ---
 function startSpeechRecognition(targetId, btnId, clearFirst) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) return alert("您的裝置不支援語音辨識");
@@ -26,7 +25,7 @@ function startSpeechRecognition(targetId, btnId, clearFirst) {
 
     recognition.onstart = () => {
         btn.classList.add('mic-active');
-        if (clearFirst) input.value = "";
+        if (clearFirst) input.value = ""; // 搜尋列點擊即清空
     };
 
     recognition.onresult = (e) => {
@@ -35,7 +34,7 @@ function startSpeechRecognition(targetId, btnId, clearFirst) {
             input.value = result;
             searchCard(); 
         } else {
-            input.value += result;
+            input.value += result; // 面板描述則採追加方式
         }
     };
 
@@ -43,7 +42,7 @@ function startSpeechRecognition(targetId, btnId, clearFirst) {
     recognition.start();
 }
 
-// --- 圖片處理 ---
+// --- 圖片壓縮與處理 ---
 function handleImageUpload(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -69,13 +68,13 @@ function handleImageUpload(input) {
     }
 }
 
-// --- 3D 旋轉 ---
+// --- 3D 旋轉與互動 ---
 function setupRotation() {
     const stage = document.getElementById('mainStage');
     const carousel = document.getElementById('carousel3d');
 
     const start = (e) => {
-        if (e.target.closest('.admin-panel') || e.target.closest('.top-nav')) return;
+        if (e.target.closest('.admin-panel') || e.target.closest('.top-nav') || e.target.closest('.side-menu')) return;
         isDragging = true;
         startX = e.pageX || e.touches[0].pageX;
         carousel.style.transition = 'none';
@@ -99,12 +98,12 @@ function setupRotation() {
     stage.addEventListener('mousedown', start);
     window.addEventListener('mousemove', move);
     window.addEventListener('mouseup', end);
-    stage.addEventListener('touchstart', start);
-    window.addEventListener('touchmove', move);
+    stage.addEventListener('touchstart', start, {passive: true});
+    window.addEventListener('touchmove', move, {passive: true});
     window.addEventListener('touchend', end);
 }
 
-// --- 資料渲染 ---
+// --- 資料通訊與渲染 ---
 async function fetchCards() {
     try {
         const res = await fetch(GAS_URL);
@@ -118,7 +117,7 @@ function renderCards() {
     carousel.innerHTML = "";
     if (cardData.length === 0) return;
     const angle = 360 / cardData.length;
-    const radius = Math.max(260, cardData.length * 40);
+    const radius = Math.max(260, cardData.length * 45);
 
     cardData.forEach((item, i) => {
         const html = `
@@ -127,13 +126,13 @@ function renderCards() {
                     <div class="card-front">
                         <img src="${item.img}" loading="lazy">
                         <div class="card-info-tag">
-                            <span style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;">${item.name}</span>
+                            <span style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; color:#fff;">${item.name}</span>
                             <span class="tag-price">$${item.price}</span>
                         </div>
                     </div>
                     <div class="card-back">
                         <div class="edit-trigger" onclick="event.stopPropagation(); openEditMode(${i})">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                         </div>
                         <strong style="color:var(--neon); font-size:16px;">${item.name}</strong>
                         <p style="margin-top:10px; overflow-y:auto; height:180px; font-size:13px; color:#ccc;">${item.desc || ''}</p>
@@ -144,7 +143,7 @@ function renderCards() {
     });
 }
 
-// --- 面板控制 ---
+// --- 控制項邏輯 ---
 function toggleAdmin(isOpen) {
     document.getElementById('adminPanel').classList.toggle('active', isOpen);
     document.getElementById('globalOverlay').style.display = isOpen ? 'block' : 'none';
@@ -185,7 +184,7 @@ function openAddMode() {
 
 async function saveCard() {
     const name = document.getElementById('cardName').value, img = document.getElementById('cardImgBase64').value;
-    if (!name || !img) return alert("請填寫名稱並上傳圖片！");
+    if (!name || !img) return alert("請填寫產品名稱並上傳圖片！");
     document.getElementById('saveBtn').innerText = "儲存中...";
     await fetch(GAS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify({
         action: "save", index: parseInt(document.getElementById('editIndex').value),

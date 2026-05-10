@@ -8,25 +8,13 @@
 * { box-sizing: border-box; font-family: "Microsoft JhengHei", sans-serif; -webkit-tap-highlight-color: transparent; }
 body { margin: 0; background: #000; color: #fff; width: 100vw; height: 100vh; overflow: hidden; }
 
-.neon-ui { border: 1px solid var(--neon) !important; box-shadow: var(--neon-glow); }
+.neon-ui { border: 1px solid var(--neon) !important; box-shadow: var(--neon-glow); transition: 0.3s; }
 
-/* --- 導航列置中優化 --- */
-.top-nav {
-    position: fixed; top: 0; width: 100%; height: 75px;
-    background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
-    display: flex; align-items: center; justify-content: center; /* 核心置中 */
-    padding: 0 15px; z-index: 500;
-}
-.nav-center-wrapper {
-    display: flex; align-items: center; justify-content: center;
-    width: 100%; max-width: 600px; /* 限制寬度讓置中更明顯 */
-    gap: 12px;
-}
+/* 頂部置中優化 */
+.top-nav { position: fixed; top: 0; width: 100%; height: 75px; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; padding: 0 15px; z-index: 500; }
+.nav-center-wrapper { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 600px; gap: 12px; }
 
-.menu-toggle-btn {
-    width: 42px; height: 42px; background: #000; border-radius: 10px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
+.menu-toggle-btn { width: 42px; height: 42px; background: #000; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .hamburger-icon { width: 20px; display: flex; flex-direction: column; gap: 5px; }
 .hamburger-icon span { width: 100%; height: 2px; background: var(--neon); border-radius: 2px; }
 
@@ -36,47 +24,60 @@ body { margin: 0; background: #000; color: #fff; width: 100vw; height: 100vh; ov
 .mic-icon-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--neon); font-size: 20px; cursor: pointer; }
 .go-action-btn { background: #000; color: var(--neon); border-radius: 20px; height: 40px; padding: 0 20px; font-weight: bold; cursor: pointer; flex-shrink: 0; }
 
-.mic-active { color: var(--danger) !important; text-shadow: 0 0 10px var(--danger); animation: breathe 1.2s infinite; }
-@keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
-/* --- 3D 轉盤卡片 (維持穩定) --- */
-.main-stage { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 320px; perspective: 1200px; }
+/* 3D 轉盤結構 */
+.main-stage { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 320px; perspective: 1200px; cursor: grab; }
 .carousel-3d { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.7s; }
 .card-item { position: absolute; width: 220px; height: 320px; }
 .card-wrapper { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: 0.6s; border-radius: 15px; }
 .card-wrapper.is-flipped { transform: rotateY(180deg); }
 
-.card-front, .card-back {
-    position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
-    border-radius: 15px; background: #111; border: 1px solid var(--neon); box-shadow: var(--neon-glow);
-    display: flex; flex-direction: column; overflow: hidden;
-}
+/* 卡片設計與編輯按鈕修正 */
+.card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; background: #111; border: 1px solid var(--neon); box-shadow: var(--neon-glow); display: flex; flex-direction: column; overflow: hidden; }
 .card-front img { width: 100%; height: 75%; object-fit: cover; border-bottom: 1px solid #222; }
 .card-info-tag { height: 25%; width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; background: #0a0a0a; }
 .tag-price { color: var(--neon); font-weight: bold; }
-.card-back { transform: rotateY(180deg); padding: 50px 15px 15px; }
 
-/* --- 側邊欄 --- */
-.side-menu {
-    position: fixed; top: 0; left: 0; width: 280px; height: 100%; background: var(--dark-surface); z-index: 1000;
-    transform: translateX(-100%); transition: 0.4s; border-right: 1px solid var(--neon);
+/* 卡片背面與編輯圖標右上角定位 */
+.card-back { transform: rotateY(180deg); padding: 50px 15px 15px; position: relative; }
+.edit-trigger { 
+    position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; 
+    border-radius: 50%; background: rgba(0,0,0,0.7); border: 1px solid var(--neon); 
+    color: var(--neon); display: flex; align-items: center; justify-content: center; 
+    box-shadow: 0 0 10px var(--neon); cursor: pointer; z-index: 20; transition: 0.3s;
 }
-.side-menu.open { transform: translateX(0); }
-.side-menu-header { padding: 40px 20px; font-size: 22px; font-weight: bold; color: var(--neon); border-bottom: 1px solid #222; }
-.menu-item { display: flex; align-items: center; padding: 15px 20px; text-decoration: none; color: #fff; border-bottom: 1px solid #1a1a1a; }
+.edit-trigger:hover { transform: scale(1.1); background: var(--neon); color: #000; }
 
-/* --- 編輯面板 --- */
-.admin-panel { position: fixed; bottom: -100%; left: 0; width: 100%; background: #050505; border-top: 2px solid var(--neon); border-radius: 20px 20px 0 0; padding: 25px 20px; z-index: 2000; transition: 0.5s; }
+/* 側邊欄跑版修正 */
+.side-menu { position: fixed; top: 0; left: 0; width: 280px; height: 100%; background: var(--dark-surface); z-index: 1000; transform: translateX(-100%); transition: 0.4s cubic-bezier(0.1, 0.8, 0.1, 1); border-right: 1px solid var(--neon); }
+.side-menu.open { transform: translateX(0); }
+.side-menu-header { padding: 40px 20px; font-size: 20px; font-weight: bold; color: var(--neon); border-bottom: 1px solid #222; }
+.menu-label { padding: 25px 20px 10px; color: #666; font-size: 12px; letter-spacing: 1px; }
+.menu-item { display: flex; align-items: center; padding: 15px 20px; text-decoration: none; border-bottom: 1px solid #1a1a1a; transition: 0.3s; }
+.menu-item-icon { width: 30px; font-size: 20px; margin-right: 15px; display: flex; justify-content: center; }
+.menu-item-text { display: flex; flex-direction: column; }
+.menu-item-text .title { margin: 0; font-size: 15px; color: #eee; }
+.menu-item-text .desc { margin: 0; font-size: 11px; color: #555; }
+
+/* 編輯面板尺寸修正 (新增與編輯統一大小) */
+.admin-panel { 
+    position: fixed; bottom: -100%; left: 50%; transform: translateX(-50%); 
+    width: 92%; max-width: 450px; height: auto; max-height: 85vh;
+    background: #050505; border: 2px solid var(--neon); border-radius: 20px 20px 0 0; 
+    padding: 25px 20px; z-index: 2000; transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    overflow-y: auto; box-shadow: 0 -10px 30px rgba(0, 242, 255, 0.3);
+}
 .admin-panel.active { bottom: 0; }
+.panel-drag-handle { width: 40px; height: 4px; background: #333; border-radius: 2px; margin: -10px auto 15px; }
+
 .admin-input, .desc-area-wrap textarea { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 10px; outline: none; margin-bottom: 12px; }
 .image-upload-area { border: 1px dashed #444; padding: 20px; text-align: center; border-radius: 10px; margin-bottom: 15px; cursor: pointer; }
 .image-upload-area img { max-width: 100%; max-height: 180px; border-radius: 5px; }
-.save-confirm-btn { width: 100%; background: var(--neon); color: #000; font-weight: bold; padding: 16px; border: none; border-radius: 12px; cursor: pointer; }
-.delete-warn-btn { width: 100%; background: transparent; color: var(--danger); border: 1px solid var(--danger); margin-top: 15px; padding: 10px; border-radius: 10px; width: 100%; }
 
-.line-guide-container { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; align-items: center; justify-content: center; }
-.line-guide-box { border: 2px solid var(--neon); padding: 30px; border-radius: 20px; text-align: center; margin: 20px; }
-.accent { color: var(--neon); font-weight: bold; }
+.save-confirm-btn { width: 100%; background: var(--neon); color: #000; font-weight: bold; padding: 16px; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; }
+.delete-warn-btn { width: 100%; background: transparent; color: var(--danger); border: 1px solid var(--danger); margin-top: 15px; padding: 10px; border-radius: 10px; cursor: pointer; }
 
 .floating-add-btn { position: fixed; bottom: 30px; right: 25px; width: 60px; height: 60px; border-radius: 50%; background: #000; color: var(--neon); font-size: 32px; z-index: 400; cursor: pointer; }
-.global-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 600; }
+.global-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 600; backdrop-filter: blur(4px); }
+.line-guide-container { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; align-items: center; justify-content: center; }
+.line-guide-box { border: 2px solid var(--neon); padding: 30px; border-radius: 20px; text-align: center; margin: 20px; box-shadow: var(--neon-glow); }
+.accent { color: var(--neon); font-weight: bold; }
