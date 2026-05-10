@@ -8,7 +8,6 @@
 </head>
 <body>
 
-    <!-- LINE 環境導引：使用專屬新按鈕類名 -->
     <div id="line-guide" class="line-guide-container">
         <div class="line-guide-box">
             <div class="guide-title">⚠️ 請使用外部瀏覽器</div>
@@ -31,7 +30,7 @@
             <div class="search-container">
                 <div class="search-bar-wrap neon-ui">
                     <input type="text" id="searchInput" placeholder="搜尋產品...">
-                    <!-- 搜尋麥克風保留：具備點擊變色功能 -->
+
                     <button id="searchMicBtn" class="mic-icon-btn" onclick="startSpeechRecognition('searchInput', 'searchMicBtn', true)">🎤</button>
                 </div>
                 <button class="go-action-btn neon-ui" onclick="searchCard()">GO</button>
@@ -49,7 +48,7 @@
         <div class="side-menu-header">KYOGOKU MENU</div>
         <div class="side-menu-body">
             <div class="menu-label">系統功能導航</div>
-            <a href="https://mvcking.github.io/Live-Streaming-Schedule/LiveStreamingSchedule.html" class="menu-item" target="_blank">
+            <a href="https://mvcking.github.io/KG/lss.html" class="menu-item" target="_blank">
                 <div class="menu-item-icon">📅</div>
                 <div class="menu-item-text">
                     <p class="title">直播排班系統</p>
@@ -60,7 +59,6 @@
         <div class="side-menu-footer">System v2.0</div>
     </nav>
 
-    <!-- 管理面板：已移除內部的麥克風按鈕 -->
     <div class="admin-panel" id="adminPanel">
         <div class="panel-drag-handle" onclick="toggleAdmin(false)"></div>
         <h3 id="panelTitle">產品資訊</h3>
@@ -86,7 +84,7 @@
             <input type="hidden" id="cardImgBase64"> 
 
             <div class="desc-area-wrap neon-ui">
-                <!-- 此處已移除麥克風按鈕 -->
+
                 <textarea id="cardBack" placeholder="輸入產品規格與描述..." rows="5"></textarea>
             </div>
             
