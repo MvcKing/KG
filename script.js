@@ -3,51 +3,51 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbxGWU6PQskSbaPTj0jNbmCw
 let cardData = [];
 let isDragging = false, startX = 0, currentRotation = 0, tempRotation = 0, lastMoveDistance = 0;
 
-// --- 初始化 ---
 window.onload = () => {
-    if (/Line/i.test(navigator.userAgent)) {
+    // 嚴謹判斷：必須是手機版且是 LINE 瀏覽器才顯示導引
+    const ua = navigator.userAgent;
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
+    const isLine = /Line/i.test(ua);
+    
+    if (isMobile && isLine) {
         document.getElementById('line-guide').style.display = 'flex';
     }
+    
     fetchCards();
-    initInteraction();
+    setupRotation();
 };
 
-// --- 語音辨識：優化清空內容功能 ---
-function startSpeechRecognition(targetId, btnId, clearContent) {
+// --- 語音辨識核心 ---
+function startSpeechRecognition(targetId, btnId, clearFirst) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return alert("您的瀏覽器不支援語音辨識");
+    if (!SpeechRecognition) return alert("您的裝置不支援語音辨識功能");
 
     const recognition = new SpeechRecognition();
     recognition.lang = 'zh-TW';
     const btn = document.getElementById(btnId);
-    const targetInput = document.getElementById(targetId);
+    const input = document.getElementById(targetId);
 
     recognition.onstart = () => {
         btn.classList.add('mic-active');
-        // 如果是搜尋列(clearContent為true)，則開始錄音時先清空文字
-        if (clearContent) targetInput.value = "";
+        if (clearFirst) input.value = ""; // 搜尋列邏輯：開始錄音即清空
     };
 
     recognition.onresult = (e) => {
-        const text = e.results[0][0].transcript;
-        // 搜尋列直接賦值，面板規格則累加
-        if (clearContent) {
-            targetInput.value = text;
-            searchCard(); // 自動觸位搜尋
+        const result = e.results[0][0].transcript;
+        if (clearFirst) {
+            input.value = result;
+            searchCard(); 
         } else {
-            targetInput.value += text;
+            input.value += result; // 面板邏輯：追加文字
         }
     };
 
-    recognition.onend = () => {
-        btn.classList.remove('mic-active');
-    };
-
+    recognition.onend = () => { btn.classList.remove('mic-active'); };
     recognition.onerror = () => { btn.classList.remove('mic-active'); };
     recognition.start();
 }
 
-// --- 圖片壓縮處理 ---
+// --- 圖片處理 ---
 function handleImageUpload(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -61,9 +61,9 @@ function handleImageUpload(input) {
                 canvas.width = w; canvas.height = h;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, w, h);
-                const compressed = canvas.toDataURL('image/jpeg', 0.7);
-                document.getElementById('imgPreview').src = compressed;
-                document.getElementById('cardImgBase64').value = compressed;
+                const base64 = canvas.toDataURL('image/jpeg', 0.7);
+                document.getElementById('imgPreview').src = base64;
+                document.getElementById('cardImgBase64').value = base64;
                 document.getElementById('previewWrapper').style.display = 'block';
                 document.getElementById('uploadPlaceholder').style.display = 'none';
             };
@@ -73,13 +73,13 @@ function handleImageUpload(input) {
     }
 }
 
-// --- 旋轉邏輯 (電腦版支援) ---
-function initInteraction() {
-    const scene = document.getElementById('scene');
-    const carousel = document.getElementById('carousel');
+// --- 3D 旋轉操控 ---
+function setupRotation() {
+    const stage = document.getElementById('mainStage');
+    const carousel = document.getElementById('carousel3d');
 
     const start = (e) => {
-        if (e.target.closest('.panel') || e.target.closest('.header') || e.target.closest('.sidebar')) return;
+        if (e.target.closest('.admin-panel') || e.target.closest('.top-nav')) return;
         isDragging = true;
         startX = e.pageX || e.touches[0].pageX;
         carousel.style.transition = 'none';
@@ -100,10 +100,10 @@ function initInteraction() {
         carousel.style.transition = 'transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1)';
     };
 
-    scene.addEventListener('mousedown', start);
+    stage.addEventListener('mousedown', start);
     window.addEventListener('mousemove', move);
     window.addEventListener('mouseup', end);
-    scene.addEventListener('touchstart', start);
+    stage.addEventListener('touchstart', start);
     window.addEventListener('touchmove', move);
     window.addEventListener('touchend', end);
 }
@@ -114,11 +114,11 @@ async function fetchCards() {
         const res = await fetch(GAS_URL);
         cardData = await res.json();
         renderCards();
-    } catch (e) { console.error("資料載入失敗"); }
+    } catch (e) { console.error("Fetch Error"); }
 }
 
 function renderCards() {
-    const carousel = document.getElementById('carousel');
+    const carousel = document.getElementById('carousel3d');
     carousel.innerHTML = "";
     if (cardData.length === 0) return;
     const angle = 360 / cardData.length;
@@ -126,20 +126,20 @@ function renderCards() {
 
     cardData.forEach((item, i) => {
         const html = `
-            <div class="card" style="transform: rotateY(${i * angle}deg) translateZ(${radius}px)">
-                <div class="card-inner" onclick="if(lastMoveDistance < 5) this.classList.toggle('is-flipped')">
-                    <div class="front">
+            <div class="card-item" style="transform: rotateY(${i * angle}deg) translateZ(${radius}px)">
+                <div class="card-wrapper" onclick="if(lastMoveDistance < 5) this.classList.toggle('is-flipped')">
+                    <div class="card-front">
                         <img src="${item.img}" loading="lazy">
-                        <div class="info-tag">
+                        <div class="card-info-tag">
                             <span style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;">${item.name}</span>
-                            <span class="info-price">$${item.price}</span>
+                            <span class="tag-price">$${item.price}</span>
                         </div>
                     </div>
-                    <div class="back">
-                        <div class="btn-edit-neon" onclick="event.stopPropagation(); openEditMode(${i})">
+                    <div class="card-back">
+                        <div class="edit-trigger" onclick="event.stopPropagation(); openEditMode(${i})">
                             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                         </div>
-                        <strong style="color:var(--primary); font-size:16px;">${item.name}</strong>
+                        <strong style="color:var(--neon); font-size:16px;">${item.name}</strong>
                         <p style="margin-top:10px; overflow-y:auto; height:180px; font-size:13px; color:#ccc;">${item.desc || ''}</p>
                     </div>
                 </div>
@@ -148,14 +148,14 @@ function renderCards() {
     });
 }
 
-// --- 面板與側邊欄控制 ---
+// --- 面板控制 ---
 function toggleAdmin(isOpen) {
     document.getElementById('adminPanel').classList.toggle('active', isOpen);
-    document.getElementById('overlay').style.display = isOpen ? 'block' : 'none';
+    document.getElementById('globalOverlay').style.display = isOpen ? 'block' : 'none';
 }
 function toggleSidebar(isOpen) {
-    document.getElementById('sidebar').classList.toggle('open', isOpen);
-    document.getElementById('overlay').style.display = isOpen ? 'block' : 'none';
+    document.getElementById('sideMenu').classList.toggle('open', isOpen);
+    document.getElementById('globalOverlay').style.display = isOpen ? 'block' : 'none';
 }
 function closeAllPanels() { toggleAdmin(false); toggleSidebar(false); }
 
@@ -189,8 +189,8 @@ function openAddMode() {
 
 async function saveCard() {
     const name = document.getElementById('cardName').value, img = document.getElementById('cardImgBase64').value;
-    if (!name || !img) return alert("名稱與圖片不可為空");
-    document.getElementById('saveBtn').innerText = "儲存中...";
+    if (!name || !img) return alert("請填寫產品名稱並拍照上傳！");
+    document.getElementById('saveBtn').innerText = "正在儲存...";
     await fetch(GAS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify({
         action: "save",
         index: parseInt(document.getElementById('editIndex').value),
@@ -200,7 +200,7 @@ async function saveCard() {
 }
 
 async function deleteCard() {
-    if (!confirm("確定刪除?")) return;
+    if (!confirm("確定要刪除此產品嗎？")) return;
     await fetch(GAS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify({
         action: "delete", index: parseInt(document.getElementById('editIndex').value)
     })});
@@ -212,6 +212,6 @@ function searchCard() {
     const idx = cardData.findIndex(d => d.name.toLowerCase().includes(key));
     if (idx !== -1) {
         currentRotation = -(idx * (360 / cardData.length));
-        document.getElementById('carousel').style.transform = `rotateY(${currentRotation}deg)`;
+        document.getElementById('carousel3d').style.transform = `rotateY(${currentRotation}deg)`;
     }
 }

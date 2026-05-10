@@ -8,68 +8,75 @@
 </head>
 <body>
 
-    <div id="line-guide" class="line-guide">
-        <div class="guide-content">
-            <div class="guide-header">⚠️ 偵測到 LINE 瀏覽器環境</div>
-            <p>1. 點擊螢幕 <span class="highlight">「...」</span></p>
-            <p>2. 選擇 <span class="highlight">「以預設瀏覽器開啟」</span></p>
-            <button class="guide-btn" onclick="document.getElementById('line-guide').style.display='none'">我知道了</button>
+    <!-- LINE 環境導引 (僅限手機 LINE) -->
+    <div id="line-guide" class="line-guide-container">
+        <div class="line-guide-box">
+            <div class="guide-title">⚠️ 請使用外部瀏覽器</div>
+            <p>為確保語音與相機功能正常：</p>
+            <p>請點選 <span class="accent">「...」</span> 並選擇 <span class="accent">「以預設瀏覽器開啟」</span></p>
+            <button class="guide-close-btn" onclick="document.getElementById('line-guide').style.display='none'">我知道了</button>
         </div>
     </div>
 
-    <div class="overlay" id="overlay" onclick="closeAllPanels()"></div>
+    <div class="global-overlay" id="globalOverlay" onclick="closeAllPanels()"></div>
 
-    <header class="header">
-        <button class="icon-btn neon-border menu-trigger" onclick="toggleSidebar(true)">
-            <span class="bar"></span><span class="bar"></span><span class="bar"></span>
-        </button>
-        <div class="search-group">
-            <div class="search-input-wrapper neon-border">
-                <input type="text" id="searchInput" placeholder="搜尋產品...">
-                <button id="searchMicBtn" class="inner-mic-btn" onclick="startSpeechRecognition('searchInput', 'searchMicBtn', true)">🎤</button>
+    <!-- 頂部導航列 -->
+    <header class="top-nav">
+        <button class="menu-toggle-btn neon-ui" onclick="toggleSidebar(true)">
+            <div class="hamburger-icon">
+                <span></span><span></span><span></span>
             </div>
-            <button class="search-btn neon-border" onclick="searchCard()">GO</button>
+        </button>
+        
+        <div class="search-container">
+            <div class="search-bar-wrap neon-ui">
+                <input type="text" id="searchInput" placeholder="搜尋產品...">
+                <button id="searchMicBtn" class="mic-icon-btn" onclick="startSpeechRecognition('searchInput', 'searchMicBtn', true)">🎤</button>
+            </div>
+            <button class="go-action-btn neon-ui" onclick="searchCard()">GO</button>
         </div>
     </header>
 
-    <main class="scene" id="scene">
-        <div class="carousel" id="carousel"></div>
+    <!-- 3D 旋轉場景 -->
+    <main class="main-stage" id="mainStage">
+        <div class="carousel-3d" id="carousel3d"></div>
     </main>
 
-    <button class="fab neon-border" onclick="openAddMode()">+</button>
+    <!-- 浮動新增按鈕 -->
+    <button class="floating-add-btn neon-ui" onclick="openAddMode()">+</button>
 
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">KYOGOKU 選單</div>
-        <div class="sidebar-content">
-            <div class="sidebar-section-title">功能導航</div>
-            <a href="https://mvcking.github.io/Live-Streaming-Schedule/LiveStreamingSchedule.html" class="nav-link" target="_blank">
-                <div class="nav-icon-box">
-                    <img src="https://www.google.com/s2/favicons?sz=64&domain=mvcking.github.io" class="nav-icon">
-                </div>
-                <div class="nav-text">
-                    <span class="main-text">直播排班系統</span>
-                    <span class="sub-text">Live Schedule</span>
+    <!-- 側邊導航欄 -->
+    <nav class="side-menu" id="sideMenu">
+        <div class="side-menu-header">KYOGOKU</div>
+        <div class="side-menu-body">
+            <div class="menu-label">系統功能</div>
+            <a href="https://mvcking.github.io/Live-Streaming-Schedule/LiveStreamingSchedule.html" class="menu-item" target="_blank">
+                <div class="menu-item-icon">📅</div>
+                <div class="menu-item-text">
+                    <p class="title">直播排班系統</p>
+                    <p class="desc">Live Schedule Management</p>
                 </div>
             </a>
-            </div>
-        <div class="sidebar-footer">© 2024 Kyogoku System</div>
-    </div>
+        </div>
+        <div class="side-menu-footer">System v2.0</div>
+    </nav>
 
-    <div class="panel" id="adminPanel">
-        <div class="panel-handle" onclick="toggleAdmin(false)"></div>
+    <!-- 產品管理面板 -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="panel-drag-handle" onclick="toggleAdmin(false)"></div>
         <h3 id="panelTitle">產品資訊</h3>
         <input type="hidden" id="editIndex" value="-1">
         
-        <div class="form-body">
-            <div class="input-flex">
-                <input type="text" id="cardName" placeholder="產品名稱" class="neon-input">
-                <input type="number" id="cardPrice" placeholder="價格" style="width: 85px;" class="neon-input">
+        <div class="admin-form">
+            <div class="form-row">
+                <input type="text" id="cardName" placeholder="產品名稱" class="admin-input neon-focus">
+                <input type="number" id="cardPrice" placeholder="價格" class="admin-input neon-focus" style="width: 100px;">
             </div>
             
-            <div class="upload-box neon-border" onclick="document.getElementById('cardImgFile').click()">
+            <div class="image-upload-area neon-ui" onclick="document.getElementById('cardImgFile').click()">
                 <div id="uploadPlaceholder">
-                    <span class="cam">📸</span>
-                    <p id="uploadStatus">拍照或上傳 (自動壓縮)</p>
+                    <span class="cam-icon">📸</span>
+                    <p>點擊拍照或上傳圖片</p>
                 </div>
                 <input type="file" id="cardImgFile" accept="image/*" capture="environment" style="display:none" onchange="handleImageUpload(this)">
                 <div id="previewWrapper" style="display:none;">
@@ -78,14 +85,14 @@
             </div>
             <input type="hidden" id="cardImgBase64"> 
 
-            <div class="textarea-container neon-border">
-                <textarea id="cardBack" placeholder="產品規格與介紹..." rows="4" class="neon-input"></textarea>
-                <button id="panelMicBtn" class="mic-btn-floating" onclick="startSpeechRecognition('cardBack', 'panelMicBtn', false)">🎤</button>
+            <div class="desc-area-wrap neon-ui">
+                <textarea id="cardBack" placeholder="輸入產品規格與描述..." rows="4"></textarea>
+                <button id="panelMicBtn" class="floating-mic-btn" onclick="startSpeechRecognition('cardBack', 'panelMicBtn', false)">🎤</button>
             </div>
             
-            <div class="panel-btns">
-                <button id="saveBtn" class="btn-save neon-border" onclick="saveCard()">確認儲存</button>
-                <button id="deleteBtn" class="btn-del" style="display:none;" onclick="deleteCard()">刪除產品</button>
+            <div class="action-buttons">
+                <button id="saveBtn" class="save-confirm-btn neon-ui" onclick="saveCard()">確認儲存同步</button>
+                <button id="deleteBtn" class="delete-warn-btn" style="display:none;" onclick="deleteCard()">刪除此產品</button>
             </div>
         </div>
     </div>
