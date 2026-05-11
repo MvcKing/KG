@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KYOGOKU Shopee-直播排班管理系統</title>
-    <link rel="icon" href="https://github.com/MvcKing/Live-Streaming-Schedule/blob/main/Butterfly%20icon.png?raw=true" type="image/png">
+    <link rel="icon" href="https://github.com/MvcKing/KG/blob/5e26f1f9afc742eb98c3cfb4bdea8f5969a7939b/Butterfly%20icon.png?raw=true" type="image/png">
     <style>
         :root { 
             --primary: #bb86fc; 
@@ -172,8 +172,8 @@
         .edit-section h3 { margin-top: 0; color: white; font-size: 22px; margin-bottom: 25px; }
 
         .input-row { display: flex; gap: 20px; flex-wrap: wrap; width: 100%; }
-        .input-group { margin-bottom: 22px; flex: 1; min-width: 200px; } /* 縮小 min-width 確保手機版正常 */
-        .input-group.full-width { flex: 1 1 100%; } /* 備註專用滿版 */
+        .input-group { margin-bottom: 22px; flex: 1; min-width: 200px; } 
+        .input-group.full-width { flex: 1 1 100%; } 
         
         label { display: block; font-size: 13px; color: #999; margin-bottom: 8px; }
         input { 
@@ -185,7 +185,7 @@
             font-size: 15px; 
             color: white;
             outline: none;
-            box-sizing: border-box; /* 確保 padding 不影響寬度 */
+            box-sizing: border-box; 
         }
         input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(187, 134, 252, 0.3); }
 
@@ -209,13 +209,13 @@
 <div class="calendar-container">    
     <div class="calendar-box">        
         <div class="calendar-header">            
-            <!-- 左側：標題 -->            
+           
             <h3 id="monthTitle">LOADING...</h3>                        
-            <!-- 中間：導航 Icon -->            
-            <a href="https://mvcking.github.io/KG/index.html" target="_blank" class="nav-icon-btn" title="KG 產品資訊系統">                
-                <img src="https://github.com/MvcKing/Live-Streaming-Schedule/blob/main/Butterfly%20icon.png?raw=true" alt="KG Icon">            
+           
+            <a href="https://mvcking.github.io/KG/index.html" target="_blank" class="nav-icon-btn">                
+                <img src="https://github.com/MvcKing/KG/blob/5e26f1f9afc742eb98c3cfb4bdea8f5969a7939b/CO2.png?raw=true" alt="KG Icon">            
             </a>
-            <!-- 右側：月份選擇 -->            
+          
             <select id="monthSelect" onchange="loadMonthlyData()"></select>        
         </div>
         <div class="calendar-grid" id="calendarGrid">            
